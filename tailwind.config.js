@@ -7,6 +7,7 @@ export default {
       fontFamily: {
         sans: ["Montserrat", "sans-serif"],
         sans2: ["Oswald", "sans-serif"],
+        sans3: ["Spicy Rice", "sans-serif"],
       },
       container: {
         center: "true",
