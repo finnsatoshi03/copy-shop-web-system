@@ -1,3 +1,6 @@
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
+
 export default function LandingPage() {
   return (
     <div>
@@ -26,6 +29,17 @@ export default function LandingPage() {
           alt="3d Image of Coffee Cup with a Coffee Beans inside it"
           className="absolute bottom-24 left-1/2 w-[50%] -translate-x-1/2 transform md:-bottom-16 md:w-[25%] lg:-bottom-24 xl:-bottom-32"
         />
+        <div className="absolute bottom-8 left-auto flex w-full justify-center md:bottom-auto md:left-72 md:mt-6 md:justify-start">
+          <Button
+            className="rounded-full text-xs md:text-sm"
+            variant={"secondary"}
+          >
+            Order Now
+          </Button>
+          <Button className="rounded-full">
+            <ChevronRight className="size-3 md:size-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
