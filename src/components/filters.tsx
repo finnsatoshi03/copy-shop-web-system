@@ -2,19 +2,40 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FilterItem } from "./filter-item";
 import { Coffee, Sandwich, UtensilsCrossed } from "lucide-react"; // Import icons from Lucide
 
-const filterVariants = {
-  hidden: { opacity: 0, height: 0, overflow: "hidden" },
+const filterContainerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1, // Stagger the children by 0.1 seconds
+    },
+  },
+};
+
+const filterItemVariants = {
+  hidden: { opacity: 0, x: -20 },
   visible: {
     opacity: 1,
-    height: "auto",
-    overflow: "hidden",
-    transition: { duration: 0.5, ease: "easeOut" },
+    x: 0,
+    transition: { duration: 0.3, ease: "easeOut" },
   },
   exit: {
     opacity: 0,
-    height: 0,
-    overflow: "hidden",
-    transition: { duration: 0.3, ease: "easeIn" },
+    x: -20,
+    transition: { duration: 0.2, ease: "easeIn" },
+  },
+};
+
+const subfilterVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    transition: { duration: 0.2, ease: "easeIn" },
   },
 };
 
@@ -87,19 +108,20 @@ export default function Filters({
       {/* Main Filters */}
       <motion.div
         className="my-2 flex flex-wrap gap-2"
-        variants={filterVariants}
+        variants={filterContainerVariants}
         initial="hidden"
         animate={showFilters ? "visible" : "hidden"}
         exit="exit"
       >
         {filterItems.map((item, index) => (
-          <FilterItem
-            key={index}
-            icon={item.icon} // Pass icon as prop
-            label={item.label}
-            onClick={() => handleFilterClick(item.label)}
-            isActive={activeFilter === item.label}
-          />
+          <motion.div key={index} variants={filterItemVariants}>
+            <FilterItem
+              icon={item.icon} // Pass icon as prop
+              label={item.label}
+              onClick={() => handleFilterClick(item.label)}
+              isActive={activeFilter === item.label}
+            />
+          </motion.div>
         ))}
       </motion.div>
 
@@ -108,19 +130,19 @@ export default function Filters({
         {activeFilter && (
           <motion.div
             className="mt-2 flex flex-wrap gap-2"
-            initial={{ opacity: 0, height: 0, overflow: "hidden" }}
-            animate={{ opacity: 1, height: "auto", overflow: "hidden" }}
-            exit={{ opacity: 0, height: 0, overflow: "hidden" }}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            variants={filterContainerVariants}
           >
             {filterItems
               .find((item) => item.label === activeFilter)
               ?.subfilters.map((subfilter, subIndex) => (
-                <div
-                  key={subIndex}
-                  className="flex items-center gap-1 rounded-lg border px-3 py-1 text-sm"
-                >
-                  {subfilter}
-                </div>
+                <motion.div key={subIndex} variants={subfilterVariants}>
+                  <div className="flex items-center gap-1 rounded-lg border px-3 py-1 text-sm">
+                    {subfilter}
+                  </div>
+                </motion.div>
               ))}
           </motion.div>
         )}
