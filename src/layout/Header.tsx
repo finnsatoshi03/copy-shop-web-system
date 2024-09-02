@@ -38,9 +38,12 @@ export default function Header() {
       </ul>
 
       {/* Centered title */}
-      <h1 className="font-sans2 absolute left-1/2 -translate-x-1/2 transform text-2xl font-bold uppercase text-black">
+      <NavLink
+        to="/home"
+        className="font-sans2 absolute left-1/2 -translate-x-1/2 transform text-2xl font-bold uppercase text-black"
+      >
         COPY SHOP
-      </h1>
+      </NavLink>
 
       {/* Right-side buttons for larger screens */}
       <ul className="ml-auto hidden justify-end lg:flex">

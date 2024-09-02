@@ -14,7 +14,7 @@ export default {
         padding: {
           lg: "8rem",
           md: "6rem",
-          DEFAULT: "4rem",
+          DEFAULT: "2rem",
         },
       },
       borderRadius: {

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 // Define animation variants
 const containerVariants = {
@@ -15,20 +16,27 @@ const containerVariants = {
       staggerChildren: 0.3, // Delay children animation for staggered effect
     },
   },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    transition: { duration: 0.5, ease: "easeIn" },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.5, ease: "easeIn" } },
 };
 
 export default function LandingPage() {
   return (
     <motion.div
-      className="relative h-[calc(100vh-10rem)] w-full overflow-x-hidden bg-[#f1ede1]"
+      className="relative h-[calc(100vh-10rem)] w-full overflow-hidden bg-[#f1ede1]"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      exit="exit"
     >
       <motion.div className="container flex flex-col" variants={itemVariants}>
         <motion.div
@@ -71,10 +79,12 @@ export default function LandingPage() {
           className="rounded-full text-xs md:text-sm"
           variant={"secondary"}
         >
-          Order Now
+          <NavLink to="/menu">Order Now</NavLink>
         </Button>
         <Button className="rounded-full">
-          <ChevronRight className="size-3 md:size-4" />
+          <NavLink to="/menu">
+            <ChevronRight className="size-3 md:size-4" />
+          </NavLink>
         </Button>
       </motion.div>
     </motion.div>

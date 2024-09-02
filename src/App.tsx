@@ -1,9 +1,16 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
-
+import { AnimatePresence } from "framer-motion";
 import AppLayout from "./layout/AppLayout";
 import LandingPage from "./pages/LandingPage";
+import Menu from "./pages/Menu";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -14,16 +21,27 @@ const queryClient = new QueryClient({
   },
 });
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route index element={<Navigate replace to="home" />} />
+        <Route element={<AppLayout />}>
+          <Route path="home" element={<LandingPage />} />
+          <Route path="menu" element={<Menu />} />
+        </Route>
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route index element={<Navigate replace to="home" />} />
-          <Route element={<AppLayout />}>
-            <Route path="home" element={<LandingPage />} />
-          </Route>
-        </Routes>
+        <AnimatedRoutes />
       </BrowserRouter>
 
       <Toaster
