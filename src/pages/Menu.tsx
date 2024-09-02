@@ -3,8 +3,9 @@ import { Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-import Filters from "@/components/filters";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import Filters from "@/components/filters";
+import Card from "@/components/card";
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -83,6 +84,11 @@ export default function Menu() {
           />
         )}
       </AnimatePresence>
+
+      {/* Items */}
+      <div className="mt-4 grid grid-cols-3 gap-4 md:grid-cols-4 lg:grid-cols-5">
+        <Card />
+      </div>
     </motion.div>
   );
 }

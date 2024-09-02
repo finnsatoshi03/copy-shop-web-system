@@ -8,6 +8,7 @@ export default {
         sans: ["Montserrat", "sans-serif"],
         sans2: ["Oswald", "sans-serif"],
         sans3: ["Spicy Rice", "sans-serif"],
+        label: ["DM Sans", "sans-serif"],
       },
       container: {
         center: "true",

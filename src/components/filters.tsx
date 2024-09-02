@@ -1,12 +1,12 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FilterItem } from "./filter-item";
-import { Coffee, Sandwich, UtensilsCrossed } from "lucide-react"; // Import icons from Lucide
+import { Coffee, Sandwich, UtensilsCrossed } from "lucide-react";
 
 const filterContainerVariants = {
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: 0.1, // Stagger the children by 0.1 seconds
+      staggerChildren: 0.1,
     },
   },
 };
@@ -47,14 +47,14 @@ interface FiltersProps {
 
 const filterItems = [
   {
-    icon: <UtensilsCrossed size={14} />, // Use Lucide icon components
+    icon: <UtensilsCrossed size={14} />,
     label: "All",
     subfilters: [
-      "Iced Energy",
-      "Hot Coffees",
-      "Cold Coffees",
-      "Starbucks Refreshers® Beverages",
-      "Frappuccino® Blended Beverages",
+      "Electric Elixirs",
+      "Brewed Brilliance",
+      "Chill-Out Classics",
+      "Refreshed Revivals",
+      "Frosted Fusions",
       "Iced Tea & Lemonade",
       "Hot Teas",
       "Milk, Juice & More",
@@ -70,11 +70,11 @@ const filterItems = [
     icon: <Coffee size={14} />,
     label: "Coffee",
     subfilters: [
-      "Iced Energy",
-      "Hot Coffees",
-      "Cold Coffees",
-      "Starbucks Refreshers® Beverages",
-      "Frappuccino® Blended Beverages",
+      "Electric Elixirs",
+      "Brewed Brilliance",
+      "Chill-Out Classics",
+      "Refreshed Revivals",
+      "Frosted Fusions",
       "Iced Tea & Lemonade",
       "Hot Teas",
       "Milk, Juice & More",
@@ -129,7 +129,7 @@ export default function Filters({
       <AnimatePresence>
         {activeFilter && (
           <motion.div
-            className="mt-2 flex flex-wrap gap-2"
+            className="my-2 flex flex-wrap gap-2"
             initial="hidden"
             animate="visible"
             exit="exit"
