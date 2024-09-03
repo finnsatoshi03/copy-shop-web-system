@@ -41,8 +41,10 @@ const subfilterVariants = {
 
 interface FiltersProps {
   showFilters: boolean;
-  activeFilter: string | null;
-  setActiveFilter: (filter: string | null) => void;
+  activeFilter: string;
+  setActiveFilter: (filter: string) => void;
+  subfilters: string[]; // Added subfilters to props
+  setSubfilters: React.Dispatch<React.SetStateAction<string[]>>; // Type for updating subfilters
 }
 
 const filterItems = [
@@ -98,9 +100,23 @@ export default function Filters({
   showFilters,
   activeFilter,
   setActiveFilter,
+  subfilters, // Accept subfilters as a prop
+  setSubfilters,
 }: FiltersProps) {
   const handleFilterClick = (label: string) => {
-    setActiveFilter(activeFilter === label ? null : label);
+    // Reset subfilters when changing main filter
+    setSubfilters([]);
+    setActiveFilter(activeFilter === label ? "" : label);
+  };
+
+  const handleSubfilterClick = (subfilter: string) => {
+    setSubfilters((prevSubfilters: string[]) => {
+      if (prevSubfilters.includes(subfilter)) {
+        return prevSubfilters.filter((s) => s !== subfilter); // Remove if already selected
+      } else {
+        return [...prevSubfilters, subfilter]; // Add if not selected
+      }
+    });
   };
 
   return (
@@ -125,9 +141,9 @@ export default function Filters({
         ))}
       </motion.div>
 
-      {/* Subfilters in a separate row */}
+      {/* Subfilters */}
       <AnimatePresence>
-        {activeFilter && (
+        {activeFilter && activeFilter !== "All" && (
           <motion.div
             className="my-2 flex flex-wrap gap-2"
             initial="hidden"
@@ -138,10 +154,17 @@ export default function Filters({
             {filterItems
               .find((item) => item.label === activeFilter)
               ?.subfilters.map((subfilter, subIndex) => (
-                <motion.div key={subIndex} variants={subfilterVariants}>
-                  <div className="flex items-center gap-1 rounded-lg border px-3 py-1 text-sm">
-                    {subfilter}
-                  </div>
+                <motion.div
+                  key={subIndex}
+                  variants={subfilterVariants}
+                  onClick={() => handleSubfilterClick(subfilter)}
+                  className={`flex cursor-pointer items-center gap-1 rounded-lg border px-3 py-1 text-sm ${
+                    subfilters.includes(subfilter) // Check if subfilter is active
+                      ? "bg-zinc-600 text-white"
+                      : "bg-white"
+                  }`}
+                >
+                  {subfilter}
                 </motion.div>
               ))}
           </motion.div>

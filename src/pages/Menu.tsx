@@ -6,11 +6,12 @@ import Slider from "react-slick";
 
 import Filters from "@/components/filters";
 import Card from "@/components/card";
-import { beverages } from "@/lib/temp";
+import { beverages } from "@/lib/temp"; // Sample beverages data imported here
 import { Button } from "@/components/ui/button";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import PaginationControls from "@/components/pagination-controls";
 
+// Variants for animation
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
@@ -43,7 +44,7 @@ const listContainerVariants = {
   },
 };
 
-// Custom Left Arrow with animation
+// Custom Left Arrow
 function PrevArrow(props: any) {
   const { className, style, onClick } = props;
   return (
@@ -56,7 +57,7 @@ function PrevArrow(props: any) {
   );
 }
 
-// Custom Right Arrow with animation
+// Custom Right Arrow
 function NextArrow(props: any) {
   const { className, style, onClick } = props;
   return (
@@ -71,21 +72,48 @@ function NextArrow(props: any) {
 
 export default function Menu() {
   const [showFilters, setShowFilters] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>("All");
+  const [subfilters, setSubfilters] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const itemsPerPage = 12;
 
   const placeholder = "Need a quick bite? We've got you covered.";
-  const beveragesData = beverages;
+  const beveragesData = beverages.map((beverage) => ({
+    ...beverage,
+    category: `${beverage.category} coffee`,
+  }));
+
+  // Update the filtering logic to handle main filters and subfilters correctly
+  const filteredItems = beveragesData.filter((beverage) => {
+    // Match by main category
+    const matchesMainFilter =
+      activeFilter === "All" || // If "All" is selected, show everything
+      (activeFilter === "Coffee" && beverage.category.includes("coffee")) || // Assuming beverages have specific categories
+      (activeFilter === "Food" && beverage.category.includes("Food")); // No food items yet
+
+    // Further match by subfilters if any are selected
+    const matchesSubfilter =
+      subfilters.length === 0 || // No subfilters means show all
+      subfilters.some((subfilter) => beverage.category.includes(subfilter));
+
+    // Match by search query
+    const matchesSearchQuery =
+      beverage.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      beverage.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Return true if it matches all criteria
+    return matchesMainFilter && matchesSubfilter && matchesSearchQuery;
+  });
+
   const popularItems = beveragesData.filter((beverage) => beverage.isPopular);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
   };
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
   };
 
   const toggleFilters = () => {
@@ -93,10 +121,10 @@ export default function Menu() {
   };
 
   // Pagination calculations
-  const totalItems = beveragesData.length;
+  const totalItems = filteredItems.length;
   const lastIndex = currentPage * itemsPerPage;
   const firstIndex = lastIndex - itemsPerPage;
-  const currentItems = beveragesData.slice(firstIndex, lastIndex);
+  const currentItems = filteredItems.slice(firstIndex, lastIndex);
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const goToNextPage = () => {
@@ -173,7 +201,7 @@ export default function Menu() {
       <div className="my-4 flex items-stretch gap-2">
         <PlaceholdersAndVanishInput
           placeholder={placeholder}
-          onChange={handleChange}
+          onChange={handleSearchChange}
           onSubmit={onSubmit}
         />
         <Button
@@ -194,26 +222,32 @@ export default function Menu() {
             showFilters={showFilters}
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
+            setSubfilters={setSubfilters}
+            subfilters={subfilters}
           />
         )}
       </AnimatePresence>
 
-      {/* Popular */}
-      <h1 className="text-lg font-bold">Best Sellers</h1>
-      <p className="text-sm italic leading-3 opacity-60">
-        What everyone's loving.
-      </p>
-      <Slider {...sliderSettings}>
-        {popularItems.map((beverage, index) => (
-          <motion.div
-            key={index}
-            variants={cardVariants}
-            className="h-[350px] px-1 py-3 sm:h-[320px] md:px-3 lg:h-[350px]"
-          >
-            <Card data={beverage} />
-          </motion.div>
-        ))}
-      </Slider>
+      {/* Conditionally render the carousel */}
+      {searchQuery === "" && (activeFilter === "All" || !activeFilter) && (
+        <>
+          <h1 className="text-lg font-bold">Best Sellers</h1>
+          <p className="text-sm italic leading-3 opacity-60">
+            What everyone's loving.
+          </p>
+          <Slider {...sliderSettings}>
+            {popularItems.map((beverage, index) => (
+              <motion.div
+                key={index}
+                variants={cardVariants}
+                className="h-[350px] px-1 py-3 sm:h-[320px] md:px-3 lg:h-[350px]"
+              >
+                <Card data={beverage} />
+              </motion.div>
+            ))}
+          </Slider>
+        </>
+      )}
 
       {/* Items List with Pagination */}
       <motion.div
@@ -233,17 +267,19 @@ export default function Menu() {
             </motion.div>
           ))}
         </div>
-        <PaginationControls
-          currentPage={currentPage}
-          totalPages={totalPages}
-          firstItemIndex={firstIndex}
-          lastItemIndex={lastIndex}
-          totalItems={totalItems}
-          onNext={goToNextPage}
-          onPrevious={goToPreviousPage}
-          onFirst={goToFirstPage}
-          onLast={goToLastPage}
-        />
+        {currentItems.length >= 12 && (
+          <PaginationControls
+            currentPage={currentPage}
+            totalPages={totalPages}
+            firstItemIndex={firstIndex}
+            lastItemIndex={lastIndex}
+            totalItems={totalItems}
+            onNext={goToNextPage}
+            onPrevious={goToPreviousPage}
+            onFirst={goToFirstPage}
+            onLast={goToLastPage}
+          />
+        )}
       </motion.div>
     </motion.div>
   );
