@@ -1,9 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { Flame } from "lucide-react";
 import { Button } from "./ui/button";
 
-export default function Card({ data }: { data: any }) {
+export default function Card({
+  data,
+  onList,
+}: {
+  data: any;
+  onList?: boolean;
+}) {
   return (
     <div className="grid h-full grid-rows-[auto_1fr_auto] rounded-lg border p-2">
+      {data.isPopular && (
+        <div
+          className={`absolute ${onList ? "top-5" : "top-8"} rounded-br-lg bg-red-700 px-2 py-0.5 text-xs text-white`}
+        >
+          <Flame size={12} />
+        </div>
+      )}
       <img src={data.image} className="w-full rounded-lg" alt={data.name} />
       <div className="flex h-full flex-col justify-between">
         <h1 className="mb-2 mt-4 line-clamp-2 font-label text-xs font-semibold md:text-sm">

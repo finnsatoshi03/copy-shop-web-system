@@ -9,6 +9,7 @@ import Card from "@/components/card";
 import { beverages } from "@/lib/temp";
 import { Button } from "@/components/ui/button";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import PaginationControls from "@/components/pagination-controls";
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -33,45 +34,50 @@ const cardVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-// Custom Left Arrow
+const listContainerVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { delay: 1, staggerChildren: 0.1, when: "beforeChildren" },
+  },
+};
+
+// Custom Left Arrow with animation
 function PrevArrow(props: any) {
   const { className, style, onClick } = props;
   return (
-    <button
-      className={`${className} absolute -left-4 top-[40%] z-10 -translate-y-1/2 transform md:-left-8`}
+    <ChevronLeft
+      size={24}
+      className={`${className} absolute -left-4 top-[40%] z-10 hidden -translate-y-1/2 transform rounded-full bg-gray-300 p-0.5 text-white hover:bg-gray-400 hover:text-white md:-left-8 md:block`}
       style={{ ...style }}
       onClick={onClick}
-    >
-      <ChevronLeft
-        size={24}
-        className="rounded-full bg-gray-300 p-0.5 text-white hover:bg-gray-400"
-      />
-    </button>
+    />
   );
 }
 
-// Custom Right Arrow
+// Custom Right Arrow with animation
 function NextArrow(props: any) {
   const { className, style, onClick } = props;
   return (
-    <button
-      className={`${className} absolute -right-4 top-[40%] z-10 -translate-y-1/2 transform md:-right-8`}
+    <ChevronRight
+      size={24}
+      className={`${className} absolute -right-4 top-[45%] z-10 hidden -translate-y-1/2 transform rounded-full bg-gray-300 p-0.5 text-white hover:bg-gray-400 hover:text-white md:-right-8 md:block`}
       style={{ ...style }}
       onClick={onClick}
-    >
-      <ChevronRight
-        size={24}
-        className="rounded-full bg-gray-300 p-0.5 text-white hover:bg-gray-400"
-      />
-    </button>
+    />
   );
 }
 
 export default function Menu() {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
   const placeholder = "Need a quick bite? We've got you covered.";
   const beveragesData = beverages;
+  const popularItems = beveragesData.filter((beverage) => beverage.isPopular);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log(e.target.value);
@@ -84,6 +90,29 @@ export default function Menu() {
 
   const toggleFilters = () => {
     setShowFilters(!showFilters);
+  };
+
+  // Pagination calculations
+  const totalItems = beveragesData.length;
+  const lastIndex = currentPage * itemsPerPage;
+  const firstIndex = lastIndex - itemsPerPage;
+  const currentItems = beveragesData.slice(firstIndex, lastIndex);
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const goToFirstPage = () => {
+    setCurrentPage(1);
+  };
+
+  const goToLastPage = () => {
+    setCurrentPage(totalPages);
   };
 
   const sliderSettings = {
@@ -112,6 +141,7 @@ export default function Menu() {
           slidesToShow: 3,
           slidesToScroll: 1,
           infinite: true,
+          arrows: false, // Hide arrows below this breakpoint
         },
       },
       {
@@ -119,6 +149,7 @@ export default function Menu() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
+          arrows: false, // Hide arrows below this breakpoint
         },
       },
     ],
@@ -126,7 +157,7 @@ export default function Menu() {
 
   return (
     <motion.div
-      className="container"
+      className="container mb-8"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -167,18 +198,53 @@ export default function Menu() {
         )}
       </AnimatePresence>
 
-      {/* Items */}
+      {/* Popular */}
+      <h1 className="text-lg font-bold">Best Sellers</h1>
+      <p className="text-sm italic leading-3 opacity-60">
+        What everyone's loving.
+      </p>
       <Slider {...sliderSettings}>
-        {beveragesData.map((beverage, index) => (
+        {popularItems.map((beverage, index) => (
           <motion.div
             key={index}
             variants={cardVariants}
-            className="h-[320px] p-3 lg:h-[350px]"
+            className="h-[350px] px-1 py-3 sm:h-[320px] md:px-3 lg:h-[350px]"
           >
             <Card data={beverage} />
           </motion.div>
         ))}
       </Slider>
+
+      {/* Items List with Pagination */}
+      <motion.div
+        className="mt-4"
+        variants={listContainerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <div className="grid grid-cols-3 gap-2 md:grid-cols-4 md:gap-4 lg:grid-cols-5 xl:grid-cols-6">
+          {currentItems.map((beverage, index) => (
+            <motion.div
+              key={index}
+              variants={cardVariants}
+              className="relative"
+            >
+              <Card data={beverage} onList />
+            </motion.div>
+          ))}
+        </div>
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+          firstItemIndex={firstIndex}
+          lastItemIndex={lastIndex}
+          totalItems={totalItems}
+          onNext={goToNextPage}
+          onPrevious={goToPreviousPage}
+          onFirst={goToFirstPage}
+          onLast={goToLastPage}
+        />
+      </motion.div>
     </motion.div>
   );
 }
