@@ -1,17 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Slider from "react-slick";
 
 import Filters from "@/components/filters";
 import Card from "@/components/card";
-import { beverages } from "@/lib/temp"; // Sample beverages data imported here
+import { beverages } from "@/lib/temp";
 import { Button } from "@/components/ui/button";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import PaginationControls from "@/components/pagination-controls";
+import { Arrow } from "@/components/ui/arrow";
+import { usePagination } from "@/hooks/usePagination";
+import { filterBeverages } from "@/lib/helpers";
 
-// Variants for animation
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
@@ -44,104 +45,38 @@ const listContainerVariants = {
   },
 };
 
-// Custom Left Arrow
-function PrevArrow(props: any) {
-  const { className, style, onClick } = props;
-  return (
-    <ChevronLeft
-      size={24}
-      className={`${className} absolute -left-4 top-[40%] z-10 hidden -translate-y-1/2 transform rounded-full bg-gray-300 p-0.5 text-white hover:bg-gray-400 hover:text-white md:-left-8 md:block`}
-      style={{ ...style }}
-      onClick={onClick}
-    />
-  );
-}
-
-// Custom Right Arrow
-function NextArrow(props: any) {
-  const { className, style, onClick } = props;
-  return (
-    <ChevronRight
-      size={24}
-      className={`${className} absolute -right-4 top-[45%] z-10 hidden -translate-y-1/2 transform rounded-full bg-gray-300 p-0.5 text-white hover:bg-gray-400 hover:text-white md:-right-8 md:block`}
-      style={{ ...style }}
-      onClick={onClick}
-    />
-  );
-}
-
 export default function Menu() {
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [subfilters, setSubfilters] = useState<string[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const itemsPerPage = 12;
 
-  const placeholder = "Need a quick bite? We've got you covered.";
   const beveragesData = beverages.map((beverage) => ({
     ...beverage,
     category: `${beverage.category} coffee`,
   }));
 
-  // Update the filtering logic to handle main filters and subfilters correctly
-  const filteredItems = beveragesData.filter((beverage) => {
-    // Match by main category
-    const matchesMainFilter =
-      activeFilter === "All" || // If "All" is selected, show everything
-      (activeFilter === "Coffee" && beverage.category.includes("coffee")) || // Assuming beverages have specific categories
-      (activeFilter === "Food" && beverage.category.includes("Food")); // No food items yet
-
-    // Further match by subfilters if any are selected
-    const matchesSubfilter =
-      subfilters.length === 0 || // No subfilters means show all
-      subfilters.some((subfilter) => beverage.category.includes(subfilter));
-
-    // Match by search query
-    const matchesSearchQuery =
-      beverage.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      beverage.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-    // Return true if it matches all criteria
-    return matchesMainFilter && matchesSubfilter && matchesSearchQuery;
-  });
-
+  const filteredItems = filterBeverages(
+    beveragesData,
+    activeFilter,
+    subfilters,
+    searchQuery,
+  );
   const popularItems = beveragesData.filter((beverage) => beverage.isPopular);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
+  const {
+    currentPage,
+    totalPages,
+    firstIndex,
+    lastIndex,
+    goToNextPage,
+    goToPreviousPage,
+    goToFirstPage,
+    goToLastPage,
+  } = usePagination(filteredItems.length, itemsPerPage);
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-  };
-
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
-  };
-
-  // Pagination calculations
-  const totalItems = filteredItems.length;
-  const lastIndex = currentPage * itemsPerPage;
-  const firstIndex = lastIndex - itemsPerPage;
   const currentItems = filteredItems.slice(firstIndex, lastIndex);
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const goToNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-  };
-
-  const goToPreviousPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const goToFirstPage = () => {
-    setCurrentPage(1);
-  };
-
-  const goToLastPage = () => {
-    setCurrentPage(totalPages);
-  };
 
   const sliderSettings = {
     infinite: true,
@@ -152,8 +87,12 @@ export default function Menu() {
     pauseOnFocus: true,
     slidesToShow: 6,
     slidesToScroll: 1,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
+    nextArrow: (
+      <Arrow direction="right" onClick={() => {}} className="top-[45%]" />
+    ),
+    prevArrow: (
+      <Arrow direction="left" onClick={() => {}} className="top-[40%]" />
+    ),
     responsive: [
       {
         breakpoint: 1024,
@@ -169,7 +108,7 @@ export default function Menu() {
           slidesToShow: 3,
           slidesToScroll: 1,
           infinite: true,
-          arrows: false, // Hide arrows below this breakpoint
+          arrows: false,
         },
       },
       {
@@ -177,7 +116,7 @@ export default function Menu() {
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
-          arrows: false, // Hide arrows below this breakpoint
+          arrows: false,
         },
       },
     ],
@@ -197,25 +136,23 @@ export default function Menu() {
         <span className="text-lg font-normal">Your Way, Your QR.</span>
       </h1>
 
-      {/* Search and Filter Button */}
       <div className="my-4 flex items-stretch gap-2">
         <PlaceholdersAndVanishInput
-          placeholder={placeholder}
-          onChange={handleSearchChange}
-          onSubmit={onSubmit}
+          placeholder="Need a quick bite? We've got you covered."
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onSubmit={(e) => e.preventDefault()}
         />
         <Button
           className={`h-12 rounded-xl ${
             showFilters ? "bg-zinc-600 text-white" : "bg-transparent text-black"
           }`}
           variant="outline"
-          onClick={toggleFilters}
+          onClick={() => setShowFilters(!showFilters)}
         >
           <Filter size={16} className="opacity-70" />
         </Button>
       </div>
 
-      {/* Filters */}
       <AnimatePresence>
         {showFilters && (
           <Filters
@@ -228,7 +165,6 @@ export default function Menu() {
         )}
       </AnimatePresence>
 
-      {/* Conditionally render the carousel */}
       {searchQuery === "" && (activeFilter === "All" || !activeFilter) && (
         <>
           <h1 className="text-lg font-bold">Best Sellers</h1>
@@ -249,7 +185,6 @@ export default function Menu() {
         </>
       )}
 
-      {/* Items List with Pagination */}
       <motion.div
         className="mt-4"
         variants={listContainerVariants}
@@ -273,7 +208,7 @@ export default function Menu() {
             totalPages={totalPages}
             firstItemIndex={firstIndex}
             lastItemIndex={lastIndex}
-            totalItems={totalItems}
+            totalItems={filteredItems.length}
             onNext={goToNextPage}
             onPrevious={goToPreviousPage}
             onFirst={goToFirstPage}
