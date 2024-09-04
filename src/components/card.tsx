@@ -5,9 +5,11 @@ import { Button } from "./ui/button";
 export default function Card({
   data,
   onList,
+  onDetails,
 }: {
   data: any;
   onList?: boolean;
+  onDetails?: (order: any) => void;
 }) {
   return (
     <div className="grid h-full grid-rows-[auto_1fr_auto] rounded-lg border p-2">
@@ -30,7 +32,10 @@ export default function Card({
           </p>
         </div>
       </div>
-      <Button className="h-fit w-full border border-green-100 bg-green-100 text-xs text-black shadow-none hover:border-gray-200 hover:bg-transparent">
+      <Button
+        className="h-fit w-full border border-green-100 bg-green-100 text-xs text-black shadow-none hover:border-gray-200 hover:bg-transparent"
+        onClick={() => onDetails?.(data)}
+      >
         Add to Cart
       </Button>
     </div>

@@ -10,3 +10,7 @@
 .slick-list {
   margin: 0 -0.8rem;
 }
+
+.custom-object-position {
+  object-position: 50% 20%;
+}
