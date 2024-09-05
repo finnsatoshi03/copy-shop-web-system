@@ -1,11 +1,28 @@
+import { useState } from "react";
+import { Menu, ShoppingCart } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+
+import { useIsMobile } from "@/hooks/useIsMobile";
+
 import { Button } from "@/components/ui/button";
 import { NotifBadge } from "@/components/ui/notif-badge";
 import { useCart } from "@/contexts/CartProvider";
-import { Menu, ShoppingCart } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { CartSheet } from "@/components/cart/cart-sheet";
 
 export default function Header() {
   const { cartItems } = useCart();
+  const isMobile = useIsMobile();
+  const navigate = useNavigate();
+
+  const [showCart, setShowCart] = useState(false);
+
+  const handleCartClick = () => {
+    if (isMobile) {
+      navigate("/cart");
+    } else {
+      setShowCart((prev) => !prev);
+    }
+  };
 
   const navItems = [
     { label: "Home", path: "#" },
@@ -15,7 +32,6 @@ export default function Header() {
 
   return (
     <nav className="container relative my-6 flex w-full items-center justify-between">
-      {/* Burger Menu for mobile */}
       <div className="lg:hidden">
         <Button
           variant="outline"
@@ -62,19 +78,23 @@ export default function Header() {
         <li>
           <Button
             variant="outline"
+            onClick={handleCartClick}
             className="relative rounded-full border border-gray-300 text-xs uppercase shadow-none"
           >
-            <NavLink to="/cart">
-              <ShoppingCart size={14} />
-              {cartItems.length > 0 && (
-                <NotifBadge direction="top-right">
-                  {cartItems.length}
-                </NotifBadge>
-              )}
-            </NavLink>
+            <ShoppingCart size={14} />
+            {cartItems.length > 0 && (
+              <NotifBadge direction="top-right">{cartItems.length}</NotifBadge>
+            )}
           </Button>
         </li>
       </ul>
+
+      {!isMobile && (
+        <CartSheet
+          open={showCart}
+          onOpenChange={(value: boolean) => setShowCart(value)}
+        />
+      )}
     </nav>
   );
 }

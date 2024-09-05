@@ -17,13 +17,13 @@ import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
 import { useCart } from "@/contexts/CartProvider";
 
-// Schema for validation using zod
 const orderSchema = z.object({
-  beverage_id: z.string(), // Ensure beverage_id is a string
+  beverage_id: z.string(),
   sugar_level: z.number().min(0).max(100),
   price: z.number().min(0),
   quantity: z.number().min(1, { message: "Quantity must be at least 1." }),
   total: z.number().min(0),
+  image: z.string().url().optional(),
 });
 
 export function OrderDialog({
@@ -44,6 +44,7 @@ export function OrderDialog({
       price: orderDetails?.price?.small || 0,
       quantity: 1,
       total: 0,
+      image: orderDetails?.image || "",
     },
   });
 
@@ -100,11 +101,11 @@ export function OrderDialog({
       price: data.price,
       quantity: data.quantity,
       total: data.total,
+      image: orderDetails?.image || "",
     };
 
     addToCart(cartItem);
   };
-
   if (!orderDetails) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -226,7 +227,13 @@ export function OrderDialog({
                 </p>
               </div>
               <Button
-                className="flex gap-2 rounded-full rounded-tl-none p-6"
+                className="flex gap-2 p-6"
+                style={{
+                  borderTopLeftRadius: "5px",
+                  borderTopRightRadius: "25px",
+                  borderBottomLeftRadius: "25px",
+                  borderBottomRightRadius: "25px",
+                }}
                 type="submit"
               >
                 <ShoppingCart size={16} fill="white" />

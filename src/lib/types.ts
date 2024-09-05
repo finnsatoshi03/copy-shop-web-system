@@ -22,6 +22,7 @@ export type Beverage = {
 
 export type CartItem = {
   beverage_id: string;
+  image: string;
   name: string;
   price: number;
   quantity: number;
