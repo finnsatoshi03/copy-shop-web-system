@@ -15,6 +15,7 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
+import { useCart } from "@/contexts/CartProvider";
 
 // Schema for validation using zod
 const orderSchema = z.object({
@@ -34,10 +35,11 @@ export function OrderDialog({
   onClose: () => void;
   orderDetails: Beverage | null;
 }) {
+  const { addToCart } = useCart();
   const { handleSubmit, setValue, reset, watch } = useForm({
     resolver: zodResolver(orderSchema),
     defaultValues: {
-      beverage_id: orderDetails?.id ? String(orderDetails.id) : "", // Convert beverage_id to string
+      beverage_id: orderDetails?.id ? String(orderDetails.id) : "",
       sugar_level: 0,
       price: orderDetails?.price?.small || 0,
       quantity: 1,
@@ -92,8 +94,15 @@ export function OrderDialog({
   };
 
   const onSubmit = (data: z.infer<typeof orderSchema>) => {
-    console.log("Form Submitted:", data);
-    // Handle form submission with the collected data
+    const cartItem = {
+      beverage_id: data.beverage_id,
+      name: orderDetails?.name || "Unnamed Beverage",
+      price: data.price,
+      quantity: data.quantity,
+      total: data.total,
+    };
+
+    addToCart(cartItem);
   };
 
   if (!orderDetails) {

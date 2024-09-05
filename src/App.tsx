@@ -12,10 +12,14 @@ import "slick-carousel/slick/slick-theme.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
+
+import { CartProvider } from "./contexts/CartProvider";
+
 import AppLayout from "./layout/AppLayout";
 import LandingPage from "./pages/LandingPage";
 import Menu from "./pages/Menu";
 import OrderItem from "./pages/OrderItem";
+import Cart from "./pages/Cart";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,7 +40,8 @@ function AnimatedRoutes() {
         <Route element={<AppLayout />}>
           <Route path="home" element={<LandingPage />} />
           <Route path="menu" element={<Menu />} />
-          <Route path="order/:orderId" element={<OrderItem />} />{" "}
+          <Route path="cart" element={<Cart />} />
+          <Route path="order/:orderId" element={<OrderItem />} />
         </Route>
       </Routes>
     </AnimatePresence>
@@ -47,7 +52,9 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AnimatedRoutes />
+        <CartProvider>
+          <AnimatedRoutes />
+        </CartProvider>
       </BrowserRouter>
 
       <Toaster

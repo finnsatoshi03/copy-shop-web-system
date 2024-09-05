@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
+import { NotifBadge } from "@/components/ui/notif-badge";
+import { useCart } from "@/contexts/CartProvider";
 import { Menu, ShoppingCart } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
 export default function Header() {
+  const { cartItems } = useCart();
+
   const navItems = [
     { label: "Home", path: "#" },
     { label: "About Us", path: "#" },
@@ -58,10 +62,15 @@ export default function Header() {
         <li>
           <Button
             variant="outline"
-            className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+            className="relative rounded-full border border-gray-300 text-xs uppercase shadow-none"
           >
-            <NavLink to="#">
+            <NavLink to="/cart">
               <ShoppingCart size={14} />
+              {cartItems.length > 0 && (
+                <NotifBadge direction="top-right">
+                  {cartItems.length}
+                </NotifBadge>
+              )}
             </NavLink>
           </Button>
         </li>

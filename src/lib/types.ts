@@ -19,3 +19,11 @@ export type Beverage = {
   isFeatured: boolean;
   category: string[];
 };
+
+export type CartItem = {
+  beverage_id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  total: number;
+};
