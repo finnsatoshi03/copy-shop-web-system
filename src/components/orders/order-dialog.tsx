@@ -3,6 +3,7 @@ import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Beverage } from "@/lib/types";
 import { Button } from "../ui/button";
+import { Slider } from "../ui/slider";
 
 export function OrderDialog({
   isOpen,
@@ -14,12 +15,14 @@ export function OrderDialog({
   orderDetails: Beverage;
 }) {
   const [selectedSize, setSelectedSize] = useState<string>("small");
-  const [quantity, setQuantity] = useState<number>(1); // Initialize quantity
+  const [quantity, setQuantity] = useState<number>(1);
+  const [selectedSugarLevel, setSelectedSugarLevel] = useState<number>(0); // Default to 100%
 
   useEffect(() => {
     if (isOpen && orderDetails) {
       setSelectedSize(orderDetails.price?.small ? "small" : "medium");
-      setQuantity(1); // Reset quantity when dialog is opened
+      setQuantity(1);
+      setSelectedSugarLevel(0);
     }
   }, [isOpen, orderDetails]);
 
@@ -42,7 +45,11 @@ export function OrderDialog({
   };
 
   const decrementQuantity = () => {
-    setQuantity((prevQuantity) => Math.max(1, prevQuantity - 1)); // Prevent going below 1
+    setQuantity((prevQuantity) => Math.max(1, prevQuantity - 1));
+  };
+
+  const handleSugarLevelChange = (value: number[]) => {
+    setSelectedSugarLevel(value[0]);
   };
 
   const sizeButtons = Object.keys(sizes).map((sizeKey) => {
@@ -69,7 +76,7 @@ export function OrderDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="overflow-hidden">
+      <DialogContent className="overflow-y-auto overflow-x-hidden">
         <div className="-mx-[1.6rem] -mt-8">
           <div className="relative h-2/3">
             <img
@@ -99,8 +106,28 @@ export function OrderDialog({
             </p>
             <h2 className="mt-4 font-label font-bold">Sizes for you</h2>
             <div className="mt-1 flex items-center gap-2">{sizeButtons}</div>
+
+            <h2 className="mt-4 font-label font-bold">Sugar Level</h2>
+            <div className="mt-1 flex flex-col">
+              <Slider
+                defaultValue={[0]}
+                max={100}
+                min={0}
+                step={25}
+                value={[selectedSugarLevel]}
+                onValueChange={handleSugarLevelChange}
+                // formatLabel={(value) => `${value}%`}
+              />
+              <div className="mt-2 flex justify-between text-xs font-bold">
+                <span>0%</span>
+                <span>25%</span>
+                <span>50%</span>
+                <span>75%</span>
+                <span>100%</span>
+              </div>
+            </div>
           </div>
-          <div className="-mb-4 mt-4 flex w-full justify-between px-8">
+          <div className="mb-4 mt-6 flex w-full justify-between px-8">
             <div className="flex flex-col justify-between">
               <h2 className="text-xs font-medium opacity-60">Total Price:</h2>
               <p className="flex items-end gap-1 text-2xl font-bold">
