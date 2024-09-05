@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 import { Dialog, DialogContent } from "../ui/dialog";
+import { Beverage } from "@/lib/types";
+import { Button } from "../ui/button";
 
 export function OrderDialog({
   isOpen,
@@ -10,15 +11,15 @@ export function OrderDialog({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  orderDetails: any;
+  orderDetails: Beverage;
 }) {
-  // Initialize selectedSize outside of any conditions
   const [selectedSize, setSelectedSize] = useState<string>("small");
+  const [quantity, setQuantity] = useState<number>(1); // Initialize quantity
 
   useEffect(() => {
-    // Set default size only when the dialog is opened and orderDetails are available
     if (isOpen && orderDetails) {
       setSelectedSize(orderDetails.price?.small ? "small" : "medium");
+      setQuantity(1); // Reset quantity when dialog is opened
     }
   }, [isOpen, orderDetails]);
 
@@ -34,6 +35,14 @@ export function OrderDialog({
     if (orderDetails.price?.[sizeKey]) {
       setSelectedSize(sizeKey);
     }
+  };
+
+  const incrementQuantity = () => {
+    setQuantity((prevQuantity) => prevQuantity + 1);
+  };
+
+  const decrementQuantity = () => {
+    setQuantity((prevQuantity) => Math.max(1, prevQuantity - 1)); // Prevent going below 1
   };
 
   const sizeButtons = Object.keys(sizes).map((sizeKey) => {
@@ -72,9 +81,13 @@ export function OrderDialog({
               }}
             />
             <div className="absolute -bottom-4 right-4 inline-flex items-center gap-1 rounded-full bg-yellow-500 px-2 py-2 font-label text-sm">
-              <Minus size={16} />
-              <p className="font-bold">#</p>
-              <Plus size={16} />
+              <button onClick={decrementQuantity}>
+                <Minus size={16} />
+              </button>
+              <p className="font-bold">{quantity}</p>
+              <button onClick={incrementQuantity}>
+                <Plus size={16} />
+              </button>
             </div>
           </div>
           <div className="mt-8 px-8">
@@ -86,11 +99,25 @@ export function OrderDialog({
             </p>
             <h2 className="mt-4 font-label font-bold">Sizes for you</h2>
             <div className="mt-1 flex items-center gap-2">{sizeButtons}</div>
-            <div className="mt-4 text-lg font-bold">
-              {orderDetails.price?.[selectedSize]
-                ? `$${orderDetails.price[selectedSize]}`
-                : "N/A"}
+          </div>
+          <div className="-mb-4 mt-4 flex w-full justify-between px-8">
+            <div className="flex flex-col justify-between">
+              <h2 className="text-xs font-medium opacity-60">Total Price:</h2>
+              <p className="flex items-end gap-1 text-2xl font-bold">
+                {orderDetails.price?.[selectedSize] ? (
+                  <>
+                    <span className="text-base text-yellow-500">₱</span>
+                    {(orderDetails.price[selectedSize] * quantity).toFixed(2)}
+                  </>
+                ) : (
+                  "N/A"
+                )}
+              </p>
             </div>
+            <Button className="flex gap-2 rounded-full rounded-tl-none p-6">
+              <ShoppingCart size={16} fill="white" />
+              Add to cart
+            </Button>
           </div>
         </div>
       </DialogContent>

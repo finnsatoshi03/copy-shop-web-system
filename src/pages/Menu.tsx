@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Filter } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Slider from "react-slick";
@@ -11,11 +12,13 @@ import { Button } from "@/components/ui/button";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import PaginationControls from "@/components/pagination-controls";
 import { Arrow } from "@/components/ui/arrow";
-import { usePagination } from "@/hooks/usePagination";
-import { filterBeverages } from "@/lib/helpers";
-import { useIsMobile } from "@/hooks/useIsMobile";
-import { useNavigate } from "react-router-dom";
 import { OrderDialog } from "@/components/orders/order-dialog";
+
+import { usePagination } from "@/hooks/usePagination";
+import { useIsMobile } from "@/hooks/useIsMobile";
+
+import { filterBeverages } from "@/lib/helpers";
+import { Beverage } from "@/lib/types";
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -64,6 +67,7 @@ export default function Menu() {
   const beveragesData = beverages.map((beverage) => ({
     ...beverage,
     category: `${beverage.category} coffee`,
+    // add sugar level to each beverage
   }));
 
   const filteredItems = filterBeverages(
@@ -199,7 +203,10 @@ export default function Menu() {
                   variants={cardVariants}
                   className="h-[350px] px-1 py-3 sm:h-[320px] md:px-3 lg:h-[350px]"
                 >
-                  <Card data={beverage} onDetails={handleOrderDetails} />
+                  <Card
+                    data={beverage as Beverage}
+                    onDetails={handleOrderDetails}
+                  />
                 </motion.div>
               ))}
             </Slider>

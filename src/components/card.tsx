@@ -1,15 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Flame } from "lucide-react";
 import { Button } from "./ui/button";
+import { Beverage } from "@/lib/types";
 
 export default function Card({
   data,
   onList,
   onDetails,
 }: {
-  data: any;
+  data: Beverage;
   onList?: boolean;
-  onDetails?: (order: any) => void;
+  onDetails?: (order: Beverage) => void;
 }) {
   return (
     <div className="grid h-full grid-rows-[auto_1fr_auto] rounded-lg border p-2">

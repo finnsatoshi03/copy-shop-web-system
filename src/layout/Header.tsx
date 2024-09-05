@@ -40,7 +40,7 @@ export default function Header() {
       {/* Centered title */}
       <NavLink
         to="/home"
-        className="font-sans2 absolute left-1/2 -translate-x-1/2 transform text-2xl font-bold uppercase text-black"
+        className="absolute left-1/2 -translate-x-1/2 transform font-sans2 text-2xl font-bold uppercase text-black"
       >
         COPY SHOP
       </NavLink>

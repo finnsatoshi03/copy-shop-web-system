@@ -1,5 +1,7 @@
+import { Beverage } from "./types";
+
 export const filterBeverages = (
-  beveragesData: any[],
+  beveragesData: Beverage[],
   activeFilter: string,
   subfilters: string[],
   searchQuery: string,
