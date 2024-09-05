@@ -137,7 +137,7 @@ export default function Menu() {
 
   const handleOrderDetails = (order: any) => {
     if (isMobile) {
-      navigate(`/order?item=${order.id}`);
+      navigate(`/order/${order.id}`);
     } else {
       setDialogOpen(true);
       setOrderDetails(order);

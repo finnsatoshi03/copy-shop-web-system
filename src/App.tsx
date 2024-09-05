@@ -15,6 +15,7 @@ import { AnimatePresence } from "framer-motion";
 import AppLayout from "./layout/AppLayout";
 import LandingPage from "./pages/LandingPage";
 import Menu from "./pages/Menu";
+import OrderItem from "./pages/OrderItem";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -35,6 +36,7 @@ function AnimatedRoutes() {
         <Route element={<AppLayout />}>
           <Route path="home" element={<LandingPage />} />
           <Route path="menu" element={<Menu />} />
+          <Route path="order/:orderId" element={<OrderItem />} />{" "}
         </Route>
       </Routes>
     </AnimatePresence>
