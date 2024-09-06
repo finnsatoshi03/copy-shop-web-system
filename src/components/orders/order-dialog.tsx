@@ -22,8 +22,6 @@ export function OrderDialog({
   onClose: () => void;
   orderDetails: Beverage | null;
 }) {
-  // const { addToCart } = useCart();
-
   const {
     handleSubmit,
     quantity,
