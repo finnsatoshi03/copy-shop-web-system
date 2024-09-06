@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { Flame, Minus, Plus, ShoppingCart } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -39,6 +39,7 @@ export function OrderDialog({
   const { addToCart } = useCart();
 
   const [selectedSize, setSelectedSize] = useState<string>("small");
+  const [calories, setCalories] = useState<number>(0);
 
   const { handleSubmit, setValue, reset, watch } = useForm({
     resolver: zodResolver(orderSchema),
@@ -66,14 +67,20 @@ export function OrderDialog({
         quantity: 1,
         total: orderDetails.price?.small || 0,
       });
+      setCalories(orderDetails.calories?.small || 0);
     }
   }, [isOpen, orderDetails, reset]);
 
-  // Calculate total whenever quantity or selectedSize changes
+  // Calculate total and update calories whenever quantity or selectedSize changes
   useEffect(() => {
     if (orderDetails) {
       const price = orderDetails?.price?.[selectedSize] || 0;
       setValue("total", price * quantity);
+      setCalories(
+        orderDetails.calories?.[
+          selectedSize as keyof typeof orderDetails.calories
+        ] || 0,
+      );
     }
   }, [quantity, selectedSize, orderDetails, setValue]);
 
@@ -81,6 +88,11 @@ export function OrderDialog({
     if (orderDetails?.price?.[sizeKey]) {
       setSelectedSize(sizeKey);
       setValue("price", orderDetails.price[sizeKey]);
+      setCalories(
+        orderDetails.calories?.[
+          sizeKey as keyof typeof orderDetails.calories
+        ] || 0,
+      );
     }
   };
 
@@ -189,9 +201,15 @@ export function OrderDialog({
             </div>
 
             <div className="mt-8 px-8">
-              <h1 className="w-2/3 font-label text-xl font-bold">
-                {orderDetails.name || "Unnamed Beverage"}
-              </h1>
+              <div className="flex justify-between">
+                <h1 className="w-2/3 font-label text-xl font-bold">
+                  {orderDetails.name || "Unnamed Beverage"}
+                </h1>
+                <div className="flex items-center gap-1 text-xs">
+                  <Flame size={12} className="text-orange-600" />
+                  <p className="leading-none">{calories || "N/A"} Calories</p>
+                </div>
+              </div>
               <p className="font-label text-xs opacity-60">
                 {orderDetails.description || "No description available"}
               </p>

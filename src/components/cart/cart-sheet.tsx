@@ -1,3 +1,5 @@
+import { useState, useMemo } from "react";
+import { FilePenLine } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -7,11 +9,13 @@ import {
   SheetFooter,
   SheetClose,
 } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartProvider";
 import { Separator } from "../ui/separator";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { FilePenLine, Minus, Plus, Trash } from "lucide-react";
+import { CartItem } from "./cart-item";
+import { OrderTypeSelector } from "./order-type-selector";
+import { TransactionMethodSelector } from "./transaction-method-selector";
+import TipDialog from "./tip-dialog";
 
 export function CartSheet({
   open,
@@ -23,6 +27,9 @@ export function CartSheet({
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const [orderType, setOrderType] = useState<"dine-in" | "take-out">("dine-in");
   const [isEditing, setIsEditing] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<string>("Cash");
+  const [tipPercentage, setTipPercentage] = useState<number>(0);
+  const [isTipDialogOpen, setTipDialogOpen] = useState<boolean>(false);
 
   const handleOpenChange = () => {
     onOpenChange(!open);
@@ -58,117 +65,123 @@ export function CartSheet({
     }
   };
 
+  const subtotal = useMemo(() => {
+    return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  }, [cartItems]);
+
+  const totalAmount = useMemo(() => {
+    return subtotal + (subtotal * tipPercentage) / 100;
+  }, [subtotal, tipPercentage]);
+
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent className="overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle className="font-label text-2xl font-light leading-6">
-            <span className="font-black">Your</span>
-            <br />
-            Cart List
-          </SheetTitle>
-          <div className="flex w-full items-end justify-between">
-            <SheetDescription>
-              Review your selected items before proceeding to checkout.
-            </SheetDescription>
-            <FilePenLine
-              onClick={handleEditToggle}
-              className="cursor-pointer"
-            />
-          </div>
-        </SheetHeader>
-        <Separator className="-px-8 my-4" />
-        <div className="my-4 grid grid-cols-2 rounded-lg border bg-gray-100 text-center">
-          <div
-            className={`cursor-pointer py-2 lg:py-4 ${
-              orderType === "dine-in"
-                ? "rounded-lg bg-neutral-900 text-neutral-50"
-                : ""
-            }`}
-            onClick={() => handleOrderTypeChange("dine-in")}
-          >
-            Dine-in
-          </div>
-          <div
-            className={`cursor-pointer py-2 lg:py-4 ${
-              orderType === "take-out"
-                ? "rounded-lg bg-neutral-900 text-neutral-50"
-                : ""
-            }`}
-            onClick={() => handleOrderTypeChange("take-out")}
-          >
-            Take Out
-          </div>
-        </div>
-        <div className="grid gap-4 py-4">
-          {cartItems.length > 0 ? (
-            cartItems.map((item, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-[100px_1fr_auto] items-center gap-4"
-              >
-                <img src={item.image} className="rounded-xl" />
-                <div className="h-[80%] w-[80%] font-label">
-                  <h1 className="font-bold">{item.name}</h1>
-                  <p className="flex items-end gap-2 font-bold">
-                    <span className="font-medium">
-                      ({item.size.charAt(0).toUpperCase()})
-                    </span>{" "}
-                    ₱{item.price}{" "}
-                    <span className="font-normal opacity-60">
-                      x{item.quantity}
-                    </span>
+        <div className="flex h-full flex-col justify-between">
+          <div>
+            <SheetHeader>
+              <SheetTitle className="font-label text-2xl font-light leading-6">
+                <span className="font-black">Your</span>
+                <br />
+                Cart List
+              </SheetTitle>
+              <div className="flex w-full items-end justify-between">
+                <SheetDescription>
+                  {cartItems.length > 0
+                    ? "Review your selected items before proceeding to checkout."
+                    : "Your cart is currently empty. Start adding items to see them here."}
+                </SheetDescription>
+
+                {cartItems.length > 0 && (
+                  <FilePenLine
+                    onClick={handleEditToggle}
+                    className="cursor-pointer"
+                  />
+                )}
+              </div>
+            </SheetHeader>
+            <Separator className="-px-8 my-4" />
+
+            {cartItems.length > 0 && (
+              <OrderTypeSelector
+                orderType={orderType}
+                onOrderTypeChange={handleOrderTypeChange}
+              />
+            )}
+
+            <div className="grid gap-4 py-4">
+              {cartItems.length > 0 ? (
+                cartItems.map((item, index) => (
+                  <CartItem
+                    key={index}
+                    item={item}
+                    isEditing={isEditing}
+                    handleRemove={handleRemove}
+                    handleIncrement={handleIncrement}
+                    handleDecrement={handleDecrement}
+                  />
+                ))
+              ) : (
+                <div className="flex h-[50vh] flex-col items-center justify-center text-center">
+                  <p className="text-lg font-semibold">Your cart is empty.</p>
+                  <p className="text-sm text-gray-500">
+                    Add items to your cart to see them here.
                   </p>
                 </div>
-                <div
-                  className={`flex ${isEditing ? "h-[80%]" : "h-full"} flex-col items-end justify-between`}
-                >
-                  {isEditing ? (
-                    <button
-                      onClick={() => handleRemove(item.beverage_id, item.size)}
-                    >
-                      <Trash size={16} className="text-red-500" />
-                    </button>
-                  ) : (
-                    <div className="flex flex-col rounded-lg bg-neutral-900 text-white">
-                      <button
-                        onClick={() =>
-                          handleIncrement(
-                            item.beverage_id,
-                            item.size,
-                            item.quantity,
-                          )
-                        }
-                      >
-                        <Plus size={14} className="size-8 rounded-lg p-2" />
-                      </button>
-                      <button
-                        onClick={() =>
-                          handleDecrement(
-                            item.beverage_id,
-                            item.size,
-                            item.quantity,
-                          )
-                        }
-                      >
-                        <Minus size={14} className="size-8 rounded-lg p-2" />
-                      </button>
-                    </div>
-                  )}
-                  <p className="font-bold">₱{item.total.toFixed(2)}</p>
+              )}
+            </div>
+          </div>
+          {cartItems.length > 0 && (
+            <div>
+              <div className="my-4 rounded-xl bg-gray-100 px-6 py-5 font-label text-sm">
+                <div className="flex justify-between">
+                  <p>Sub Total</p>
+                  <p>₱{subtotal.toFixed(2)}</p>
+                </div>
+                <div className="flex justify-between">
+                  <p>Tip</p>
+                  <Button
+                    variant={"link"}
+                    className="h-fit p-0"
+                    onClick={() => setTipDialogOpen(true)}
+                  >
+                    {tipPercentage > 0 ? `${tipPercentage}%` : "Select Tip"}
+                  </Button>
+                </div>
+                <div className="my-3 h-[2px] w-full border border-dashed border-gray-400"></div>
+                <div className="flex justify-between text-base font-bold">
+                  <p>Total Amount</p>
+                  <p>₱{totalAmount.toFixed(2)}</p>
                 </div>
               </div>
-            ))
-          ) : (
-            <p>Your cart is empty.</p>
+
+              <TransactionMethodSelector
+                selectedMethod={selectedMethod}
+                onSelectMethod={setSelectedMethod}
+              />
+
+              <SheetFooter className={`${cartItems.length > 1 && "mb-8"}`}>
+                <SheetClose asChild>
+                  <Button
+                    className="w-full bg-yellow-500 py-6 text-neutral-900"
+                    disabled={cartItems.length === 0}
+                  >
+                    Proceed to Checkout
+                  </Button>
+                </SheetClose>
+              </SheetFooter>
+            </div>
           )}
         </div>
-        <SheetFooter>
-          <SheetClose asChild>
-            <Button>Proceed to Checkout</Button>
-          </SheetClose>
-        </SheetFooter>
       </SheetContent>
+
+      <TipDialog
+        open={isTipDialogOpen}
+        onOpenChange={setTipDialogOpen}
+        onSelectTip={(tip) => {
+          setTipPercentage(tip);
+          setTipDialogOpen(false);
+        }}
+      />
     </Sheet>
   );
 }
