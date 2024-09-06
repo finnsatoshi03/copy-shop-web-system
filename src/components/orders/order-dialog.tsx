@@ -114,7 +114,7 @@ export function OrderDialog({
       name: orderDetails?.name || "Unnamed Beverage",
       price: data.price,
       size: selectedSize,
-      sugar_level,
+      sugar_level: sugar_level,
       quantity: data.quantity,
       total: data.total,
       image: orderDetails?.image || "",

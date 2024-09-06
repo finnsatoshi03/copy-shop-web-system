@@ -46,6 +46,7 @@ export function CartItem({
         ) : (
           <div className="flex flex-col rounded-lg bg-neutral-900 text-white">
             <button
+              className="rounded-lg hover:bg-neutral-700"
               onClick={() =>
                 handleIncrement(item.beverage_id, item.size, item.quantity)
               }
@@ -53,6 +54,7 @@ export function CartItem({
               <Plus size={14} className="size-8 rounded-lg p-2" />
             </button>
             <button
+              className="rounded-lg hover:bg-neutral-700"
               onClick={() =>
                 handleDecrement(item.beverage_id, item.size, item.quantity)
               }

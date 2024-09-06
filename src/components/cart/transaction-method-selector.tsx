@@ -3,7 +3,7 @@ import { Banknote, CreditCard, QrCode } from "lucide-react";
 const transactionMethods = [
   { name: "Cash", icon: Banknote },
   { name: "Credit/Debit Card", icon: CreditCard },
-  { name: "QR Code", icon: QrCode },
+  { name: "Gcash", icon: QrCode },
 ];
 
 export function TransactionMethodSelector({
@@ -14,7 +14,7 @@ export function TransactionMethodSelector({
   onSelectMethod: (method: string) => void;
 }) {
   return (
-    <div className="my-6 grid grid-cols-3 gap-2">
+    <div className="my-2 grid grid-cols-3 gap-2">
       {transactionMethods.map((method) => {
         const Icon = method.icon;
         return (

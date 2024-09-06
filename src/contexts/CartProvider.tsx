@@ -19,7 +19,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         (cartItem) =>
           cartItem.beverage_id === item.beverage_id &&
           cartItem.size === item.size &&
-          cartItem.sugarLevel === item.sugarLevel,
+          cartItem.sugar_level === item.sugar_level,
       );
 
       if (existingItemIndex !== -1) {
