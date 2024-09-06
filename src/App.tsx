@@ -58,7 +58,7 @@ export default function App() {
       </BrowserRouter>
 
       <Toaster
-        position="top-right"
+        position="top-center"
         gutter={12}
         containerStyle={{ margin: "8px" }}
         toastOptions={{
@@ -69,7 +69,7 @@ export default function App() {
             duration: 5000,
           },
           style: {
-            fontSize: "16px",
+            fontSize: "12px",
             maxWidth: "500px",
             padding: "8px 16px",
             backgroundColor: "white",

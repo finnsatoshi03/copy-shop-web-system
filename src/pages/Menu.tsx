@@ -64,10 +64,21 @@ export default function Menu() {
   const [orderDetails, setOrderDetails] = useState<any>(null);
   const navigate = useNavigate();
 
-  const beveragesData = beverages.map((beverage) => ({
+  const beveragesData: Beverage[] = beverages.map((beverage) => ({
     ...beverage,
-    category: `${beverage.category} coffee`,
-    // add sugar level to each beverage
+    category: [`${beverage.category} coffee`],
+    price: {
+      ...beverage.price,
+      small: beverage.price.small || 0,
+      medium: beverage.price.medium || 0,
+      large: beverage.price.large || 0,
+    },
+    calories: {
+      ...beverage.calories,
+      small: beverage.calories.small || 0,
+      medium: beverage.calories.medium || 0,
+      large: beverage.calories.large || 0,
+    },
   }));
 
   const filteredItems = filterBeverages(

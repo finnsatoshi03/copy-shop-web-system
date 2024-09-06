@@ -16,6 +16,7 @@ import {
 import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
 import { useCart } from "@/contexts/CartProvider";
+import toast from "react-hot-toast";
 
 const orderSchema = z.object({
   beverage_id: z.string(),
@@ -36,21 +37,22 @@ export function OrderDialog({
   orderDetails: Beverage | null;
 }) {
   const { addToCart } = useCart();
+
+  const [selectedSize, setSelectedSize] = useState<string>("small");
+
   const { handleSubmit, setValue, reset, watch } = useForm({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       beverage_id: orderDetails?.id ? String(orderDetails.id) : "",
       sugar_level: 0,
       price: orderDetails?.price?.small || 0,
+      size: selectedSize,
       quantity: 1,
       total: 0,
       image: orderDetails?.image || "",
     },
   });
 
-  const [selectedSize, setSelectedSize] = useState<string>("small");
-
-  // Watch for form field changes
   const quantity = watch("quantity");
   const sugar_level = watch("sugar_level");
 
@@ -99,12 +101,17 @@ export function OrderDialog({
       beverage_id: data.beverage_id,
       name: orderDetails?.name || "Unnamed Beverage",
       price: data.price,
+      size: selectedSize,
       quantity: data.quantity,
       total: data.total,
       image: orderDetails?.image || "",
     };
 
     addToCart(cartItem);
+    if (onClose) {
+      onClose();
+      toast.success(`${orderDetails?.name} added to cart.`);
+    }
   };
   if (!orderDetails) {
     return (
@@ -153,8 +160,8 @@ export function OrderDialog({
           <DialogDescription></DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="-mx-[1.6rem] -mt-8 h-fit">
+        <form onSubmit={handleSubmit(onSubmit)} className="h-[80vh]">
+          <div className="-mx-[1.6rem] -mt-8 h-full">
             <div className="relative h-1/2">
               {orderDetails?.image ? (
                 <img
