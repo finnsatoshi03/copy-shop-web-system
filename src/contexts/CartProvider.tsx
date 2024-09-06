@@ -18,7 +18,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const existingItemIndex = prevItems.findIndex(
         (cartItem) =>
           cartItem.beverage_id === item.beverage_id &&
-          cartItem.size === item.size,
+          cartItem.size === item.size &&
+          cartItem.sugarLevel === item.sugarLevel,
       );
 
       if (existingItemIndex !== -1) {

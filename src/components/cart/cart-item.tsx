@@ -34,6 +34,7 @@ export function CartItem({
           ₱{item.price}{" "}
           <span className="font-normal opacity-60">x{item.quantity}</span>
         </p>
+        <p className="text-xs opacity-60">Sugar: {item.sugarLevel}%</p>
       </div>
       <div
         className={`flex ${isEditing ? "h-[80%]" : "h-full"} flex-col items-end justify-between`}

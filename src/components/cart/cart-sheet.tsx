@@ -162,7 +162,7 @@ export function CartSheet({
               <SheetFooter className={`${cartItems.length > 1 && "mb-8"}`}>
                 <SheetClose asChild>
                   <Button
-                    className="w-full bg-yellow-500 py-6 text-neutral-900"
+                    className="w-full bg-yellow-500 py-6 font-bold text-neutral-900"
                     disabled={cartItems.length === 0}
                   >
                     Proceed to Checkout

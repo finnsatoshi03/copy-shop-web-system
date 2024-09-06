@@ -25,6 +25,7 @@ export type CartItem = {
   image: string;
   name: string;
   size: string;
+  sugarLevel: string;
   price: number;
   quantity: number;
   total: number;
