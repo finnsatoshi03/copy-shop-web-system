@@ -33,7 +33,7 @@ export default function Cart() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex h-full flex-col justify-between"
+          className="flex h-[calc(100dvh-6.5rem)] flex-col justify-between"
         >
           {!isCheckout ? (
             <CartView

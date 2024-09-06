@@ -15,6 +15,7 @@ import { SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "../ui/separator";
 import { UseFormReturn } from "react-hook-form";
 import { CartItem } from "@/lib/types";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 interface FormData {
   customer_name: string;
@@ -48,9 +49,11 @@ function CheckoutForm({
   setTipDialogOpen,
   onSheet,
 }: CheckoutFormProps) {
+  const isMobile = useIsMobile();
+
   return (
     <>
-      <div>
+      <div className={`${isMobile && "container"} `}>
         {onSheet ? (
           <SheetHeader>
             <div className="flex items-center space-x-4">
@@ -118,7 +121,7 @@ function CheckoutForm({
         </div>
       </div>
 
-      <div>
+      <div className={`${isMobile && "container"} `}>
         <div className="my-4 rounded-xl bg-gray-100 px-6 py-5 font-label text-sm">
           <div className="flex justify-between">
             <p>Sub Total</p>
