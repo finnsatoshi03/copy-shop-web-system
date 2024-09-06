@@ -34,6 +34,7 @@ interface CheckoutFormProps {
   selectedMethod: string;
   setSelectedMethod: (method: string) => void;
   setTipDialogOpen: (open: boolean) => void;
+  onSheet?: boolean;
 }
 
 function CheckoutForm({
@@ -45,23 +46,40 @@ function CheckoutForm({
   selectedMethod,
   setSelectedMethod,
   setTipDialogOpen,
+  onSheet,
 }: CheckoutFormProps) {
   return (
     <>
       <div>
-        <SheetHeader>
-          <div className="flex items-center space-x-4">
-            <ArrowLeft
-              className="cursor-pointer"
-              onClick={() => setIsCheckout(false)}
-            />
-            <SheetTitle className="font-label text-2xl font-light leading-6">
-              <span className="font-black">Order</span>
-              <br />
-              Details
-            </SheetTitle>
+        {onSheet ? (
+          <SheetHeader>
+            <div className="flex items-center space-x-4">
+              <ArrowLeft
+                className="cursor-pointer"
+                onClick={() => setIsCheckout(false)}
+              />
+              <SheetTitle className="font-label text-2xl font-light leading-6">
+                <span className="font-black">Order</span>
+                <br />
+                Details
+              </SheetTitle>
+            </div>
+          </SheetHeader>
+        ) : (
+          <div>
+            <div className="flex items-center space-x-4">
+              <ArrowLeft
+                className="cursor-pointer"
+                onClick={() => setIsCheckout(false)}
+              />
+              <h1 className="font-label text-2xl font-light leading-6">
+                <span className="font-black">Order</span>
+                <br />
+                Details
+              </h1>
+            </div>
           </div>
-        </SheetHeader>
+        )}
         <Separator className="-px-8 my-4" />
         <div className="flex flex-col gap-4">
           <TransactionMethodSelector
