@@ -3,34 +3,13 @@ import { useState, useMemo, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { ArrowLeft, ArrowRight, FilePenLine } from "lucide-react";
 
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { Separator } from "../ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Form } from "@/components/ui/form";
+import CartView from "@/pages/Cart";
+import CheckoutForm from "./checkout-form";
 
 import { useCart } from "@/contexts/CartProvider";
-
-import { CartItem } from "./cart-item";
-import { OrderTypeSelector } from "./order-type-selector";
-import { TransactionMethodSelector } from "./transaction-method-selector";
 import TipDialog from "./tip-dialog";
 
 const formSchema = z.object({
@@ -38,9 +17,9 @@ const formSchema = z.object({
     .string()
     .min(2, { message: "Customer name must be at least 2 characters." }),
   customer_msg: z.string().optional(),
-  total_amount: z.number().min(1),
+  total_amt: z.number().min(1),
   order_type: z.enum(["dine-in", "take-out"]),
-  payment_method: z.string(),
+  payment_type: z.string(),
   order_items: z.array(
     z.object({
       beverage_id: z.string(),
@@ -116,9 +95,9 @@ export function CartSheet({
     defaultValues: {
       customer_name: "",
       customer_msg: "",
-      total_amount: totalAmount,
+      total_amt: totalAmount,
       order_type: orderType,
-      payment_method: selectedMethod,
+      payment_type: selectedMethod,
       order_items: cartItems,
     },
   });
@@ -130,9 +109,9 @@ export function CartSheet({
       order: {
         customer_name: values.customer_name,
         customer_msg: values.customer_msg,
-        total_amount: values.total_amount,
+        total_amt: values.total_amt,
         order_type: values.order_type,
-        payment_method: values.payment_method,
+        payment_type: values.payment_type,
       },
       order_items: sanitizedCartItems,
     };
@@ -141,7 +120,7 @@ export function CartSheet({
   }
 
   useEffect(() => {
-    form.setValue("total_amount", totalAmount);
+    form.setValue("total_amt", totalAmount);
   }, [totalAmount, form]);
 
   return (
@@ -153,197 +132,32 @@ export function CartSheet({
             className="flex h-full flex-col justify-between"
           >
             {!isCheckout ? (
-              // Cart view before checkout
-              <>
-                <div>
-                  <SheetHeader>
-                    <SheetTitle className="font-label text-2xl font-light leading-6">
-                      <span className="font-black">Your</span>
-                      <br />
-                      Cart List
-                    </SheetTitle>
-                    <div className="flex w-full items-end justify-between">
-                      <SheetDescription>
-                        {cartItems.length > 0
-                          ? "Review your selected items before proceeding to checkout."
-                          : "Your cart is currently empty. Start adding items to see them here."}
-                      </SheetDescription>
-
-                      {cartItems.length > 0 && (
-                        <FilePenLine
-                          onClick={handleEditToggle}
-                          className="cursor-pointer"
-                        />
-                      )}
-                    </div>
-                  </SheetHeader>
-                  <Separator className="-px-8 my-4" />
-
-                  {cartItems.length > 0 && (
-                    <OrderTypeSelector
-                      orderType={orderType}
-                      onOrderTypeChange={handleOrderTypeChange}
-                    />
-                  )}
-
-                  <div className="grid gap-4 py-4">
-                    {cartItems.length > 0 ? (
-                      cartItems.map((item, index) => (
-                        <CartItem
-                          key={index}
-                          item={item}
-                          isEditing={isEditing}
-                          handleRemove={handleRemove}
-                          handleIncrement={handleIncrement}
-                          handleDecrement={handleDecrement}
-                        />
-                      ))
-                    ) : (
-                      <div className="flex h-[50vh] flex-col items-center justify-center text-center">
-                        <p className="text-lg font-semibold">
-                          Your cart is empty.
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Add items to your cart to see them here.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {cartItems.length > 0 && (
-                  <div>
-                    <div className="my-4 rounded-xl bg-gray-100 px-6 py-5 font-label text-sm">
-                      <div className="flex justify-between">
-                        <p>Sub Total</p>
-                        <p>₱{subtotal.toFixed(2)}</p>
-                      </div>
-                      <div className="flex justify-between">
-                        <p>Tip</p>
-                        <Button
-                          type="button"
-                          variant={"link"}
-                          className="h-fit p-0"
-                          onClick={() => setTipDialogOpen(true)}
-                        >
-                          {tipPercentage > 0
-                            ? `${tipPercentage}%`
-                            : "Select Tip"}
-                        </Button>
-                      </div>
-                      <div className="my-3 h-[2px] w-full border border-dashed border-gray-400"></div>
-                      <div className="flex justify-between text-base font-bold">
-                        <p>Total Amount</p>
-                        <p>₱{totalAmount.toFixed(2)}</p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Button
-                        type="button"
-                        className="flex w-full gap-2 bg-yellow-500 py-6 font-bold text-neutral-900 hover:bg-yellow-300"
-                        onClick={(e) => {
-                          setIsCheckout(true);
-                          e.preventDefault();
-                        }}
-                      >
-                        Proceed to Checkout <ArrowRight size={14} />
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </>
+              <CartView
+                cartItems={cartItems}
+                subtotal={subtotal}
+                tipPercentage={tipPercentage}
+                totalAmount={totalAmount}
+                handleEditToggle={handleEditToggle}
+                handleIncrement={handleIncrement}
+                handleDecrement={handleDecrement}
+                handleRemove={handleRemove}
+                setIsCheckout={setIsCheckout}
+                setTipDialogOpen={setTipDialogOpen}
+                isEditing={isEditing}
+                orderType={orderType}
+                handleOrderTypeChange={handleOrderTypeChange}
+              />
             ) : (
-              // Checkout form
-              <>
-                <div>
-                  <SheetHeader>
-                    <div className="flex items-center space-x-4">
-                      <ArrowLeft
-                        className="cursor-pointer"
-                        onClick={() => setIsCheckout(false)}
-                      />
-                      <SheetTitle className="font-label text-2xl font-light leading-6">
-                        <span className="font-black">Order</span>
-                        <br />
-                        Details
-                      </SheetTitle>
-                    </div>
-                  </SheetHeader>
-                  <Separator className="-px-8 my-4" />
-                  <div className="flex flex-col gap-4">
-                    <TransactionMethodSelector
-                      selectedMethod={selectedMethod}
-                      onSelectMethod={setSelectedMethod}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="customer_name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Customer Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormDescription>
-                            Your name will appear on the order.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="customer_msg"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Leave a message (optional)</FormLabel>
-                          <FormControl>
-                            <Textarea
-                              // placeholder="Leave a message"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="my-4 rounded-xl bg-gray-100 px-6 py-5 font-label text-sm">
-                    <div className="flex justify-between">
-                      <p>Sub Total</p>
-                      <p>₱{subtotal.toFixed(2)}</p>
-                    </div>
-                    <div className="flex justify-between">
-                      <p>Tip</p>
-                      <Button
-                        type="button"
-                        variant={"link"}
-                        className="h-fit p-0"
-                        onClick={() => setTipDialogOpen(true)}
-                      >
-                        {tipPercentage > 0 ? `${tipPercentage}%` : "Select Tip"}
-                      </Button>
-                    </div>
-                    <div className="my-3 h-[2px] w-full border border-dashed border-gray-400"></div>
-                    <div className="flex justify-between text-base font-bold">
-                      <p>Total Amount</p>
-                      <p>₱{totalAmount.toFixed(2)}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4">
-                    <Button
-                      type="submit"
-                      className="w-full bg-yellow-500 py-6 font-bold text-neutral-900 hover:bg-yellow-300"
-                    >
-                      Confirm Order
-                    </Button>
-                  </div>
-                </div>
-              </>
+              <CheckoutForm
+                subtotal={subtotal}
+                tipPercentage={tipPercentage}
+                totalAmount={totalAmount}
+                form={form}
+                setIsCheckout={setIsCheckout}
+                selectedMethod={selectedMethod}
+                setSelectedMethod={setSelectedMethod}
+                setTipDialogOpen={setTipDialogOpen}
+              />
             )}
           </form>
         </Form>
