@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Menu, ShoppingCart } from "lucide-react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { Menu, ShoppingCart, ArrowLeft } from "lucide-react";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 
 import { useIsMobile } from "@/hooks/useIsMobile";
 
@@ -13,6 +13,7 @@ export default function Header() {
   const { cartItems } = useCart();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [showCart, setShowCart] = useState(false);
 
@@ -24,11 +25,17 @@ export default function Header() {
     }
   };
 
+  const handleBackClick = () => {
+    navigate("/menu");
+  };
+
   const navItems = [
     { label: "Home", path: "#" },
     { label: "About Us", path: "#" },
     { label: "How it works", path: "#" },
   ];
+
+  const isOrderPage = location.pathname.startsWith("/order/");
 
   return (
     <nav className="container relative my-6 flex w-full items-center justify-between">
@@ -36,9 +43,10 @@ export default function Header() {
         <Button
           variant="outline"
           className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+          onClick={isOrderPage ? handleBackClick : undefined}
         >
           <NavLink to="#">
-            <Menu size={14} />
+            {isOrderPage ? <ArrowLeft size={14} /> : <Menu size={14} />}
           </NavLink>
         </Button>
       </div>
@@ -66,8 +74,8 @@ export default function Header() {
       </NavLink>
 
       {/* Right-side buttons for larger screens */}
-      <ul className="ml-auto hidden justify-end lg:flex">
-        <li>
+      <ul className="ml-auto justify-end lg:flex">
+        <li className="hidden lg:block">
           <Button
             variant="outline"
             className="rounded-full border border-gray-300 text-xs uppercase shadow-none"

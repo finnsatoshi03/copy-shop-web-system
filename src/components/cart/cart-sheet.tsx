@@ -146,6 +146,7 @@ export function CartSheet({
                 isEditing={isEditing}
                 orderType={orderType}
                 handleOrderTypeChange={handleOrderTypeChange}
+                onSheet
               />
             ) : (
               <CheckoutForm

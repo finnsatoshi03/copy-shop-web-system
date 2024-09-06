@@ -32,6 +32,7 @@ interface CartViewProps {
   isEditing: boolean;
   orderType: "dine-in" | "take-out";
   handleOrderTypeChange: (type: "dine-in" | "take-out") => void;
+  onSheet?: boolean;
 }
 
 function CartView({
@@ -48,31 +49,56 @@ function CartView({
   isEditing,
   orderType,
   handleOrderTypeChange,
+  onSheet,
 }: CartViewProps) {
   return (
     <>
       <div>
-        <SheetHeader>
-          <SheetTitle className="font-label text-2xl font-light leading-6">
-            <span className="font-black">Your</span>
-            <br />
-            Cart List
-          </SheetTitle>
-          <div className="flex w-full items-end justify-between">
-            <SheetDescription>
-              {cartItems.length > 0
-                ? "Review your selected items before proceeding to checkout."
-                : "Your cart is currently empty. Start adding items to see them here."}
-            </SheetDescription>
+        {onSheet ? (
+          <SheetHeader>
+            <SheetTitle className="font-label text-2xl font-light leading-6">
+              <span className="font-black">Your</span>
+              <br />
+              Cart List
+            </SheetTitle>
+            <div className="flex w-full items-end justify-between">
+              <SheetDescription>
+                {cartItems.length > 0
+                  ? "Review your selected items before proceeding to checkout."
+                  : "Your cart is currently empty. Start adding items to see them here."}
+              </SheetDescription>
 
-            {cartItems.length > 0 && (
-              <FilePenLine
-                onClick={handleEditToggle}
-                className="cursor-pointer"
-              />
-            )}
+              {cartItems.length > 0 && (
+                <FilePenLine
+                  onClick={handleEditToggle}
+                  className="cursor-pointer"
+                />
+              )}
+            </div>
+          </SheetHeader>
+        ) : (
+          <div>
+            <h1 className="font-label text-2xl font-light leading-6">
+              <span className="font-black">Your</span>
+              <br />
+              Cart List
+            </h1>
+            <div className="flex w-full items-end justify-between">
+              <p>
+                {cartItems.length > 0
+                  ? "Review your selected items before proceeding to checkout."
+                  : "Your cart is currently empty. Start adding items to see them here."}
+              </p>
+
+              {cartItems.length > 0 && (
+                <FilePenLine
+                  onClick={handleEditToggle}
+                  className="cursor-pointer"
+                />
+              )}
+            </div>
           </div>
-        </SheetHeader>
+        )}
         <Separator className="-px-8 my-4" />
 
         {cartItems.length > 0 && (
