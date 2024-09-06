@@ -110,8 +110,8 @@ export function CartSheet({
         customer_name: values.customer_name,
         customer_msg: values.customer_msg,
         total_amt: values.total_amt,
-        order_type: values.order_type,
-        payment_type: values.payment_type,
+        order_type: orderType,
+        payment_type: selectedMethod,
       },
       order_items: sanitizedCartItems,
     };

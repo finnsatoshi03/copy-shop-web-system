@@ -1,9 +1,4 @@
-import { useState, useEffect } from "react";
 import { Flame, Minus, Plus, ShoppingCart } from "lucide-react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import { Beverage } from "@/lib/types";
 
 import {
@@ -15,17 +10,8 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
-import { useCart } from "@/contexts/CartProvider";
-import toast from "react-hot-toast";
-
-const orderSchema = z.object({
-  beverage_id: z.string(),
-  sugar_level: z.number().min(0).max(100),
-  price: z.number().min(0),
-  quantity: z.number().min(1, { message: "Quantity must be at least 1." }),
-  total: z.number().min(0),
-  image: z.string().url().optional(),
-});
+import { useOrderLogic } from "./useOrderLogic";
+import { FieldValues, SubmitHandler } from "react-hook-form";
 
 export function OrderDialog({
   isOpen,
@@ -36,96 +22,21 @@ export function OrderDialog({
   onClose: () => void;
   orderDetails: Beverage | null;
 }) {
-  const { addToCart } = useCart();
+  // const { addToCart } = useCart();
 
-  const [selectedSize, setSelectedSize] = useState<string>("small");
-  const [calories, setCalories] = useState<number>(0);
+  const {
+    handleSubmit,
+    quantity,
+    sugar_level,
+    selectedSize,
+    calories,
+    incrementQuantity,
+    decrementQuantity,
+    handleSizeSelect,
+    handleSugarLevelChange,
+    onSubmit,
+  } = useOrderLogic(orderDetails, onClose);
 
-  const { handleSubmit, setValue, reset, watch } = useForm({
-    resolver: zodResolver(orderSchema),
-    defaultValues: {
-      beverage_id: orderDetails?.id ? String(orderDetails.id) : "",
-      sugar_level: 0,
-      price: orderDetails?.price?.small || 0,
-      size: selectedSize,
-      quantity: 1,
-      total: 0,
-      image: orderDetails?.image || "",
-    },
-  });
-
-  const quantity = watch("quantity");
-  const sugar_level = watch("sugar_level");
-
-  useEffect(() => {
-    if (isOpen && orderDetails) {
-      setSelectedSize(orderDetails.price?.small ? "small" : "medium");
-      reset({
-        beverage_id: String(orderDetails.id), // Convert to string
-        sugar_level: 0,
-        price: orderDetails.price?.small || 0,
-        quantity: 1,
-        total: orderDetails.price?.small || 0,
-      });
-      setCalories(orderDetails.calories?.small || 0);
-    }
-  }, [isOpen, orderDetails, reset]);
-
-  // Calculate total and update calories whenever quantity or selectedSize changes
-  useEffect(() => {
-    if (orderDetails) {
-      const price = orderDetails?.price?.[selectedSize] || 0;
-      setValue("total", price * quantity);
-      setCalories(
-        orderDetails.calories?.[
-          selectedSize as keyof typeof orderDetails.calories
-        ] || 0,
-      );
-    }
-  }, [quantity, selectedSize, orderDetails, setValue]);
-
-  const handleSizeSelect = (sizeKey: string) => {
-    if (orderDetails?.price?.[sizeKey]) {
-      setSelectedSize(sizeKey);
-      setValue("price", orderDetails.price[sizeKey]);
-      setCalories(
-        orderDetails.calories?.[
-          sizeKey as keyof typeof orderDetails.calories
-        ] || 0,
-      );
-    }
-  };
-
-  const incrementQuantity = () => {
-    setValue("quantity", quantity + 1);
-  };
-
-  const decrementQuantity = () => {
-    setValue("quantity", Math.max(1, quantity - 1));
-  };
-
-  const handleSugarLevelChange = (value: number[]) => {
-    setValue("sugar_level", value[0]);
-  };
-
-  const onSubmit = (data: z.infer<typeof orderSchema>) => {
-    const cartItem = {
-      beverage_id: data.beverage_id,
-      name: orderDetails?.name || "Unnamed Beverage",
-      price: data.price,
-      size: selectedSize,
-      sugar_level: sugar_level,
-      quantity: data.quantity,
-      total: data.total,
-      image: orderDetails?.image || "",
-    };
-
-    addToCart(cartItem);
-    if (onClose) {
-      onClose();
-      toast.success(`${orderDetails?.name} added to cart.`);
-    }
-  };
   if (!orderDetails) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -173,7 +84,10 @@ export function OrderDialog({
           <DialogDescription></DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="h-[80vh]">
+        <form
+          onSubmit={handleSubmit(onSubmit as SubmitHandler<FieldValues>)}
+          className="h-[80vh]"
+        >
           <div className="flex h-full flex-col justify-between pb-4">
             <div className="-mx-[1.6rem] -mt-8 h-full">
               <div className="relative h-1/2">
