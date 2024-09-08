@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useCart } from "@/contexts/CartProvider";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   customer_name: z
@@ -27,7 +29,8 @@ const formSchema = z.object({
 });
 
 export function useCartLogic() {
-  const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
+  const navigate = useNavigate();
 
   const [orderType, setOrderType] = useState<"dine-in" | "take-out">("dine-in");
   const [isEditing, setIsEditing] = useState(false);
@@ -35,6 +38,8 @@ export function useCartLogic() {
   const [tipPercentage, setTipPercentage] = useState<number>(0);
   const [isTipDialogOpen, setTipDialogOpen] = useState<boolean>(false);
   const [isCheckout, setIsCheckout] = useState<boolean>(false);
+  const [submittedValues, setSubmittedValues] = useState<any | null>(null);
+  const [pdfGenerated, setPdfGenerated] = useState<boolean>(false);
 
   const subtotal = useMemo(() => {
     return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -85,7 +90,7 @@ export function useCartLogic() {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const sanitizedCartItems = cartItems.map(({ image, ...item }) => item);
 
-    const submittedValues = {
+    const orderDetails = {
       order: {
         customer_name: values.customer_name,
         customer_msg: values.customer_msg,
@@ -96,7 +101,11 @@ export function useCartLogic() {
       order_items: sanitizedCartItems,
     };
 
-    console.log(submittedValues);
+    setSubmittedValues(orderDetails);
+    setPdfGenerated(false);
+
+    navigate("/");
+    clearCart();
   };
 
   useEffect(() => {
@@ -126,5 +135,8 @@ export function useCartLogic() {
     handleEditToggle,
     form,
     onSubmit,
+    submittedValues,
+    pdfGenerated,
+    setPdfGenerated,
   };
 }

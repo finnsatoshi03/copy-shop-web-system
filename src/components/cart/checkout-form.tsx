@@ -48,10 +48,9 @@ function CheckoutForm({
   setTipDialogOpen,
   onSheet,
 }: CheckoutFormProps) {
-
   return (
     <>
-      <div className='px-8 md:px-0'>
+      <div className="px-8 md:px-0">
         {onSheet ? (
           <SheetHeader>
             <div className="flex items-center space-x-4">
