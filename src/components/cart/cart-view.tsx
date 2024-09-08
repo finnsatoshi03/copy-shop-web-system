@@ -6,7 +6,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useIsMobile } from "@/hooks/useIsMobile";
 import { CartItem as CartTypeItem } from "@/lib/types";
 import { Separator } from "@radix-ui/react-separator";
 import { FilePenLine } from "lucide-react";
@@ -52,11 +51,9 @@ function CartView({
   handleOrderTypeChange,
   onSheet,
 }: CartViewProps) {
-  const isMobile = useIsMobile();
-
   return (
     <>
-      <div className={`${isMobile && "container"}`}>
+      <div className="px-8 md:px-0">
         {onSheet ? (
           <SheetHeader>
             <SheetTitle className="font-label text-2xl font-light leading-6">
@@ -128,7 +125,7 @@ function CartView({
         </div>
       </div>
       {cartItems.length > 0 && (
-        <div className={`${isMobile && "container"} `}>
+        <div className="px-8 md:px-0">
           <div className="my-4 rounded-xl bg-gray-100 px-6 py-5 font-label text-sm">
             <div className="flex justify-between">
               <p>Sub Total</p>

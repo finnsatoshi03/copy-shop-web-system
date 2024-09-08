@@ -8,6 +8,14 @@ import { Button } from "@/components/ui/button";
 import { NotifBadge } from "@/components/ui/notif-badge";
 import { useCart } from "@/contexts/CartProvider";
 import { CartSheet } from "@/components/cart/cart-sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function Header() {
   const { cartItems } = useCart();
@@ -26,7 +34,7 @@ export default function Header() {
   };
 
   const handleBackClick = () => {
-    navigate("/menu");
+    navigate(-1);
   };
 
   const navItems = [
@@ -36,19 +44,52 @@ export default function Header() {
   ];
 
   const isOrderPage = location.pathname.startsWith("/order/");
+  const isCartPage = location.pathname.startsWith("/cart");
 
   return (
     <nav className="container relative my-6 flex w-full items-center justify-between">
       <div className="lg:hidden">
-        <Button
-          variant="outline"
-          className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
-          onClick={isOrderPage ? handleBackClick : undefined}
-        >
-          <NavLink to="#">
-            {isOrderPage ? <ArrowLeft size={14} /> : <Menu size={14} />}
-          </NavLink>
-        </Button>
+        {isOrderPage || isCartPage ? (
+          <Button
+            variant="outline"
+            className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+            onClick={isOrderPage || isCartPage ? handleBackClick : undefined}
+          >
+            <ArrowLeft size={14} />
+          </Button>
+        ) : (
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+              >
+                <Menu size={14} />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" hideCloseButton className="w-1/2">
+              <SheetHeader className="hidden">
+                <SheetTitle></SheetTitle>
+                <SheetDescription></SheetDescription>
+              </SheetHeader>
+              <ul className="space-y-8">
+                <h1 className="font-sans2 text-3xl font-bold">COPY SHOP</h1>
+                <div className="flex flex-col space-y-2">
+                  {navItems.map((item) => (
+                    <li key={item.label}>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start rounded-full border border-gray-300 text-xs uppercase shadow-none"
+                      >
+                        <NavLink to={item.path}>{item.label}</NavLink>
+                      </Button>
+                    </li>
+                  ))}
+                </div>
+              </ul>
+            </SheetContent>
+          </Sheet>
+        )}
       </div>
 
       {/* Navigation links for larger screens */}
