@@ -39,8 +39,7 @@ const formSchema = z.object({
 });
 
 export function useCartLogic() {
-  const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
-  const navigate = useNavigate();
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
 
   const [orderType, setOrderType] = useState<"dine-in" | "take-out">("dine-in");
   const [isEditing, setIsEditing] = useState(false);
@@ -210,8 +209,8 @@ export function useCartLogic() {
 
     generatePDF(orderDetails.order, orderDetails.order_items);
 
-    navigate("/");
-    clearCart();
+    // navigate("/");
+    // clearCart();
   };
 
   useEffect(() => {

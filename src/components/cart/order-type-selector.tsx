@@ -6,7 +6,7 @@ export function OrderTypeSelector({
   onOrderTypeChange: (type: "dine-in" | "take-out") => void;
 }) {
   return (
-    <div className="my-4 grid grid-cols-2 rounded-lg border bg-gray-100 text-center">
+    <div className="my-4 grid grid-cols-2 rounded-lg border bg-gray-100 text-center text-sm md:text-base">
       <div
         className={`cursor-pointer py-2 lg:py-4 ${
           orderType === "dine-in"
