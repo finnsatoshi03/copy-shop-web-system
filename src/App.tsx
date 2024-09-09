@@ -15,11 +15,15 @@ import { AnimatePresence } from "framer-motion";
 
 import { CartProvider } from "./contexts/CartProvider";
 
+import ProtectedRoute from "./components/protected-route";
 import AppLayout from "./layout/AppLayout";
 import LandingPage from "./pages/LandingPage";
 import Menu from "./pages/Menu";
 import OrderItem from "./pages/OrderItem";
 import Cart from "./pages/Cart";
+import AdminLogin from "./pages/AdminLogin";
+import AdminMenu from "./pages/AdminMenu";
+import { AuthProvider } from "./contexts/AuthProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,6 +47,24 @@ function AnimatedRoutes() {
           <Route path="cart" element={<Cart />} />
           <Route path="order/:orderId" element={<OrderItem />} />
         </Route>
+        {/* admin side */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route
+            path="secret-passage-to-admin-dashboard/menu"
+            element={<AdminMenu />}
+          />
+        </Route>
+
+        <Route
+          path="secret-passage-to-admin-dashboard"
+          element={<AdminLogin />}
+        />
       </Routes>
     </AnimatePresence>
   );
@@ -52,9 +74,11 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <CartProvider>
-          <AnimatedRoutes />
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <AnimatedRoutes />
+          </CartProvider>
+        </AuthProvider>
       </BrowserRouter>
 
       <Toaster
