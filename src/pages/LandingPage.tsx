@@ -50,7 +50,7 @@ export default function LandingPage() {
           </p>
         </motion.div>
         <motion.h1
-          className="font-sans2 gradient-text order-first mb-3 mt-6 w-full text-center text-[4rem] font-black leading-[4rem] md:order-last md:mb-0 md:mt-0 md:text-[8rem] md:leading-[7rem] lg:text-[10rem] lg:leading-[9rem] xl:text-[14rem] xl:leading-[13rem]"
+          className="gradient-text order-first mb-3 mt-6 w-full text-center font-sans2 text-[4rem] font-black leading-[4rem] md:order-last md:mb-0 md:mt-0 md:text-[8rem] md:leading-[7rem] lg:text-[10rem] lg:leading-[9rem] xl:text-[14rem] xl:leading-[13rem]"
           variants={itemVariants}
         >
           COPYSHOP
@@ -75,17 +75,19 @@ export default function LandingPage() {
         className="absolute bottom-8 left-auto flex w-full justify-center md:bottom-auto md:left-72 md:mt-6 md:justify-start"
         variants={itemVariants}
       >
-        <Button
-          className="rounded-full text-xs md:text-sm"
-          variant={"secondary"}
-        >
-          <NavLink to="/menu">Order Now</NavLink>
-        </Button>
-        <Button className="rounded-full">
-          <NavLink to="/menu">
+        <NavLink to="/menu">
+          <Button
+            className="rounded-full text-xs md:text-sm"
+            variant={"secondary"}
+          >
+            Order Now
+          </Button>
+        </NavLink>
+        <NavLink to="/menu">
+          <Button className="rounded-full">
             <ChevronRight className="size-3 md:size-4" />
-          </NavLink>
-        </Button>
+          </Button>
+        </NavLink>
       </motion.div>
     </motion.div>
   );

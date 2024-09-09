@@ -1,6 +1,5 @@
 import CartView from "@/components/cart/cart-view";
 import CheckoutForm from "@/components/cart/checkout-form";
-import ReceiptPrinter from "@/components/cart/e-receipt-print";
 import TipDialog from "@/components/cart/tip-dialog";
 import { useCartLogic } from "@/components/cart/useCartLogic";
 import { Form } from "@/components/ui/form";
@@ -27,9 +26,6 @@ export default function Cart() {
     onSubmit,
     isTipDialogOpen,
     setTipPercentage,
-    submittedValues,
-    pdfGenerated,
-    setPdfGenerated,
   } = useCartLogic();
 
   return (
@@ -69,15 +65,6 @@ export default function Cart() {
           )}
         </form>
       </Form>
-
-      {submittedValues && (
-        <ReceiptPrinter
-          order={submittedValues.order}
-          orderItems={submittedValues.order_items}
-          pdfGenerated={pdfGenerated}
-          setPdfGenerated={setPdfGenerated}
-        />
-      )}
 
       <TipDialog
         open={isTipDialogOpen}
