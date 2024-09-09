@@ -6,23 +6,12 @@ import { Button } from "@/components/ui/button";
 import { NotifBadge } from "@/components/ui/notif-badge";
 import { useCart } from "@/contexts/CartProvider";
 import { CartSheet } from "@/components/cart/cart-sheet";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { useAuth } from "@/contexts/AuthProvider";
 
 export default function Header() {
   const { cartItems } = useCart();
-  const { isAdmin } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
-
   const [showCart, setShowCart] = useState(false);
 
   const handleCartClick = () => {
@@ -37,16 +26,11 @@ export default function Header() {
     navigate(-1);
   };
 
-  const navItems = isAdmin
-    ? [
-        { label: "Menu", path: "/secret-passage-to-admin-dashboard/menu" },
-        { label: "Orders", path: "/secret-passage-to-admin-dashboard/orders" },
-      ]
-    : [
-        { label: "Home", path: "/home" },
-        { label: "About Us", path: "#" },
-        { label: "How it works", path: "#" },
-      ];
+  const navItems = [
+    { label: "Home", path: "/home" },
+    { label: "About Us", path: "#" },
+    { label: "How it works", path: "#" },
+  ];
 
   const isOrderPage = location.pathname.startsWith("/order/");
   const isCartPage = location.pathname.startsWith("/cart");
@@ -63,37 +47,12 @@ export default function Header() {
             <ArrowLeft size={14} />
           </Button>
         ) : (
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button
-                variant="outline"
-                className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
-              >
-                <Menu size={14} />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" hideCloseButton className="w-1/2">
-              <SheetHeader className="hidden">
-                <SheetTitle></SheetTitle>
-                <SheetDescription></SheetDescription>
-              </SheetHeader>
-              <ul className="space-y-8">
-                <h1 className="font-sans2 text-3xl font-bold">COPY SHOP</h1>
-                <div className="flex flex-col space-y-2">
-                  {navItems.map((item) => (
-                    <li key={item.label}>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start rounded-full border border-gray-300 text-xs uppercase shadow-none"
-                      >
-                        <NavLink to={item.path}>{item.label}</NavLink>
-                      </Button>
-                    </li>
-                  ))}
-                </div>
-              </ul>
-            </SheetContent>
-          </Sheet>
+          <Button
+            variant="outline"
+            className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+          >
+            <Menu size={14} />
+          </Button>
         )}
       </div>
 
@@ -120,32 +79,28 @@ export default function Header() {
       </NavLink>
 
       {/* Right-side buttons for larger screens */}
-      {!isAdmin && (
-        <ul className="ml-auto justify-end lg:flex">
-          <li className="hidden lg:block">
-            <Button
-              variant="outline"
-              className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
-            >
-              <NavLink to="/menu">Shop Now</NavLink>
-            </Button>
-          </li>
-          <li>
-            <Button
-              variant="outline"
-              onClick={handleCartClick}
-              className="relative rounded-full border border-gray-300 text-xs uppercase shadow-none"
-            >
-              <ShoppingCart size={14} />
-              {cartItems.length > 0 && (
-                <NotifBadge direction="top-right">
-                  {cartItems.length}
-                </NotifBadge>
-              )}
-            </Button>
-          </li>
-        </ul>
-      )}
+      <ul className="ml-auto justify-end lg:flex">
+        <li className="hidden lg:block">
+          <Button
+            variant="outline"
+            className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+          >
+            <NavLink to="/menu">Shop Now</NavLink>
+          </Button>
+        </li>
+        <li>
+          <Button
+            variant="outline"
+            onClick={handleCartClick}
+            className="relative rounded-full border border-gray-300 text-xs uppercase shadow-none"
+          >
+            <ShoppingCart size={14} />
+            {cartItems.length > 0 && (
+              <NotifBadge direction="top-right">{cartItems.length}</NotifBadge>
+            )}
+          </Button>
+        </li>
+      </ul>
 
       {!isMobile && (
         <CartSheet

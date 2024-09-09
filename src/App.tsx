@@ -25,6 +25,7 @@ import AdminMenu from "./pages/AdminMenu";
 
 import useAdminShortcut from "./hooks/useAdminShortcut";
 import ProtectedRoute from "./components/protected-route";
+import AdminOrders from "./pages/AdminOrders";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -75,6 +76,10 @@ function AnimatedRoutes() {
           <Route
             path="secret-passage-to-admin-dashboard/menu"
             element={<AdminMenu />}
+          />
+          <Route
+            path="secret-passage-to-admin-dashboard/orders"
+            element={<AdminOrders />}
           />
         </Route>
 
