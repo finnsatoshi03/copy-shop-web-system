@@ -14,8 +14,7 @@ import { Toaster } from "react-hot-toast";
 import { AnimatePresence } from "framer-motion";
 
 import { CartProvider } from "./contexts/CartProvider";
-
-import ProtectedRoute from "./components/protected-route";
+import { AuthProvider, useAuth } from "./contexts/AuthProvider";
 import AppLayout from "./layout/AppLayout";
 import LandingPage from "./pages/LandingPage";
 import Menu from "./pages/Menu";
@@ -23,31 +22,49 @@ import OrderItem from "./pages/OrderItem";
 import Cart from "./pages/Cart";
 import AdminLogin from "./pages/AdminLogin";
 import AdminMenu from "./pages/AdminMenu";
-import { AuthProvider } from "./contexts/AuthProvider";
+
+import useAdminShortcut from "./hooks/useAdminShortcut";
+import ProtectedRoute from "./components/protected-route";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 0,
-      // refetchOnWindowFocus: false,
     },
   },
 });
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const { isAdmin } = useAuth();
+  useAdminShortcut();
 
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route index element={<Navigate replace to="home" />} />
-        <Route element={<AppLayout />}>
-          <Route path="home" element={<LandingPage />} />
-          <Route path="menu" element={<Menu />} />
-          <Route path="cart" element={<Cart />} />
-          <Route path="order/:orderId" element={<OrderItem />} />
-        </Route>
-        {/* admin side */}
+
+        {/* Client-side routes - accessible only if not admin */}
+        {!isAdmin && (
+          <Route element={<AppLayout />}>
+            <Route path="home" element={<LandingPage />} />
+            <Route path="menu" element={<Menu />} />
+            <Route path="cart" element={<Cart />} />
+            <Route path="order/:orderId" element={<OrderItem />} />
+          </Route>
+        )}
+
+        {/* Redirect admin trying to access client pages */}
+        {isAdmin && (
+          <Route
+            path="*"
+            element={
+              <Navigate to="/secret-passage-to-admin-dashboard/menu" replace />
+            }
+          />
+        )}
+
+        {/* Admin-side routes */}
         <Route
           element={
             <ProtectedRoute>
@@ -61,6 +78,7 @@ function AnimatedRoutes() {
           />
         </Route>
 
+        {/* Admin Login */}
         <Route
           path="secret-passage-to-admin-dashboard"
           element={<AdminLogin />}

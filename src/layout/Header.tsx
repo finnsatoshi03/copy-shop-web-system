@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Menu, ShoppingCart, ArrowLeft } from "lucide-react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
-
 import { useIsMobile } from "@/hooks/useIsMobile";
-
 import { Button } from "@/components/ui/button";
 import { NotifBadge } from "@/components/ui/notif-badge";
 import { useCart } from "@/contexts/CartProvider";
@@ -16,9 +14,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useAuth } from "@/contexts/AuthProvider";
 
 export default function Header() {
   const { cartItems } = useCart();
+  const { isAdmin } = useAuth();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const location = useLocation();
@@ -37,11 +37,16 @@ export default function Header() {
     navigate(-1);
   };
 
-  const navItems = [
-    { label: "Home", path: "#" },
-    { label: "About Us", path: "#" },
-    { label: "How it works", path: "#" },
-  ];
+  const navItems = isAdmin
+    ? [
+        { label: "Menu", path: "/secret-passage-to-admin-dashboard/menu" },
+        { label: "Orders", path: "/secret-passage-to-admin-dashboard/orders" },
+      ]
+    : [
+        { label: "Home", path: "/home" },
+        { label: "About Us", path: "#" },
+        { label: "How it works", path: "#" },
+      ];
 
   const isOrderPage = location.pathname.startsWith("/order/");
   const isCartPage = location.pathname.startsWith("/cart");
@@ -115,28 +120,32 @@ export default function Header() {
       </NavLink>
 
       {/* Right-side buttons for larger screens */}
-      <ul className="ml-auto justify-end lg:flex">
-        <li className="hidden lg:block">
-          <Button
-            variant="outline"
-            className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
-          >
-            <NavLink to="#">Shop Now</NavLink>
-          </Button>
-        </li>
-        <li>
-          <Button
-            variant="outline"
-            onClick={handleCartClick}
-            className="relative rounded-full border border-gray-300 text-xs uppercase shadow-none"
-          >
-            <ShoppingCart size={14} />
-            {cartItems.length > 0 && (
-              <NotifBadge direction="top-right">{cartItems.length}</NotifBadge>
-            )}
-          </Button>
-        </li>
-      </ul>
+      {!isAdmin && (
+        <ul className="ml-auto justify-end lg:flex">
+          <li className="hidden lg:block">
+            <Button
+              variant="outline"
+              className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+            >
+              <NavLink to="/menu">Shop Now</NavLink>
+            </Button>
+          </li>
+          <li>
+            <Button
+              variant="outline"
+              onClick={handleCartClick}
+              className="relative rounded-full border border-gray-300 text-xs uppercase shadow-none"
+            >
+              <ShoppingCart size={14} />
+              {cartItems.length > 0 && (
+                <NotifBadge direction="top-right">
+                  {cartItems.length}
+                </NotifBadge>
+              )}
+            </Button>
+          </li>
+        </ul>
+      )}
 
       {!isMobile && (
         <CartSheet
