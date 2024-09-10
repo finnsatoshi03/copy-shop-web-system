@@ -7,10 +7,12 @@ export function PlaceholdersAndVanishInput({
   placeholder,
   onChange,
   onSubmit,
+  className,
 }: {
   placeholder: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  className?: string;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const newDataRef = useRef<any[]>([]);
@@ -148,14 +150,15 @@ export function PlaceholdersAndVanishInput({
   return (
     <form
       className={cn(
-        "relative h-12 w-full max-w-xl overflow-hidden rounded-xl border bg-white transition duration-200 dark:bg-zinc-800",
+        "relative h-12 w-full overflow-hidden rounded-xl border bg-white transition duration-200 dark:bg-zinc-800",
         value && "bg-gray-50",
+        className,
       )}
       onSubmit={handleSubmit}
     >
       <canvas
         className={cn(
-          "pointer-events-none absolute left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-sm invert filter sm:left-8 dark:invert-0",
+          "pointer-events-none absolute left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-sm invert filter dark:invert-0 sm:left-8",
           !animating ? "opacity-0" : "opacity-100",
         )}
         ref={canvasRef}
@@ -173,7 +176,7 @@ export function PlaceholdersAndVanishInput({
         type="text"
         placeholder={placeholder}
         className={cn(
-          "relative z-50 h-full w-full rounded-full border-none bg-transparent pl-4 pr-20 text-sm text-black focus:outline-none focus:ring-0 sm:pl-10 sm:text-sm dark:text-white",
+          "relative z-50 h-full w-full rounded-full border-none bg-transparent pl-4 pr-20 text-sm text-black focus:outline-none focus:ring-0 dark:text-white sm:pl-10 sm:text-sm",
           animating && "text-transparent dark:text-transparent",
         )}
       />

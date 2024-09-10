@@ -7,7 +7,7 @@ import { NotifBadge } from "@/components/ui/notif-badge";
 import { useCart } from "@/contexts/CartProvider";
 import { CartSheet } from "@/components/cart/cart-sheet";
 
-export default function Header() {
+export default function Navbar() {
   const { cartItems } = useCart();
   const isMobile = useIsMobile();
   const navigate = useNavigate();

@@ -172,6 +172,7 @@ export default function Menu() {
 
         <div className="my-4 flex items-stretch gap-2">
           <PlaceholdersAndVanishInput
+            className="max-w-xl"
             placeholder="Need a quick bite? We've got you covered."
             onChange={(e) => setSearchQuery(e.target.value)}
             onSubmit={(e) => e.preventDefault()}
