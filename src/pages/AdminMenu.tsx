@@ -1,10 +1,10 @@
 import Header from "@/components/header";
 import { beverages } from "@/lib/temp";
 import { Beverage } from "@/lib/types";
-import ItemList from "@/components/admin/item-list";
-import PopularItems from "@/components/admin/popular-items";
+import ItemList from "@/components/admin-menu/item-list";
+import PopularItems from "@/components/admin-menu/popular-items";
 import { useMemo } from "react";
-import CreateNewItemButton from "@/components/admin/create-new-button";
+import CreateNewItemDialog from "@/components/admin-menu/create-new-dialog";
 
 export default function AdminMenu() {
   const beveragesData: Beverage[] = useMemo(() => {
@@ -35,7 +35,7 @@ export default function AdminMenu() {
       <div className="grid grid-cols-[1fr_0.4fr] gap-4">
         <ItemList beveragesData={beveragesData} />
         <div className="space-y-4">
-          <CreateNewItemButton />
+          <CreateNewItemDialog />
           <PopularItems popularItems={popularItems} />
         </div>
       </div>

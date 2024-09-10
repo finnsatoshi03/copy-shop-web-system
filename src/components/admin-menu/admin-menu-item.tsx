@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { Beverage } from "@/lib/types";
+import CreateNewItemDialog from "@/components/admin-menu/create-new-dialog";
 
 export default function AdminMenuItem({ data }: { data: Beverage }) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="flex gap-2">
+    <div className="flex cursor-pointer gap-2" onClick={() => setIsOpen(true)}>
       <img src={data.image} className="size-16 rounded-md" />
       <div>
         <h1 className="line-clamp-1 max-w-xl font-bold leading-none">
@@ -12,6 +16,12 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
           {data.description}
         </p>
       </div>
+
+      <CreateNewItemDialog
+        beverageData={data}
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      />
     </div>
   );
 }

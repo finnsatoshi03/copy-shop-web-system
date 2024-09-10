@@ -1,4 +1,4 @@
-import AdminMenuItem from "@/components/admin/admin-menu-item";
+import AdminMenuItem from "@/components/admin-menu/admin-menu-item";
 import { Beverage } from "@/lib/types";
 import { useState } from "react";
 import SearchInput from "./search-input";
