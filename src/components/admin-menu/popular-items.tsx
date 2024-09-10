@@ -16,7 +16,7 @@ const PopularItems: React.FC<PopularItemsProps> = ({ popularItems }) => {
         {popularItems.map((beverage, index) => (
           <>
             <p className="flex items-center justify-center text-xs">
-              {index + 1 < 9 ? `0${index + 1}` : index + 1}
+              {index + 1 <= 9 ? `0${index + 1}` : index + 1}
             </p>
             <div className="flex h-full gap-2 border-b">
               <img
