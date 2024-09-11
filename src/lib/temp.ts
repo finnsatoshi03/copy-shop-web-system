@@ -985,3 +985,36 @@ export const foods = [
     category: ["Lunch", "Healthy Options"],
   },
 ];
+
+export const orders = [
+  {
+    order_id: 1,
+    payment_id: 1,
+    customer_name: "John Doe",
+    customer_msg: "I want it super cold. Put dry ice please!",
+    total_amt: 260,
+    order_type: "Dine-In",
+    order_status: "Preparing",
+    created_time: "2024-09-10T14:05:13.000Z",
+    last_modified: "2024-09-10T14:05:13.000Z",
+    isVoid: 0,
+    reference_code: "AD5FH8",
+    admin_id: 1,
+    modified_time: null,
+    payment_type: "Gcash",
+    payment_status: "Pending",
+    receipt_url: null,
+    items: [
+      {
+        "Beverage ID": "4",
+        Name: "Iced Americano",
+        Description:
+          "Bold espresso with water and ice for a refreshing classic.",
+        "Sugar Level": "50",
+        Price: "260",
+        Quantity: "1",
+        "Total Price": "260",
+      },
+    ],
+  },
+];

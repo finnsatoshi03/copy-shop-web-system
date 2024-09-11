@@ -30,3 +30,33 @@ export type CartItem = {
   quantity: number;
   total: number;
 };
+
+export interface Item {
+  "Beverage ID": string;
+  Name: string;
+  Description: string;
+  "Sugar Level": string;
+  Price: string;
+  Quantity: string;
+  "Total Price": string;
+}
+
+export interface Order {
+  order_id: number;
+  payment_id: number;
+  customer_name: string;
+  customer_msg: string;
+  total_amt: number;
+  order_type: string;
+  order_status: string;
+  created_time: string;
+  last_modified: string;
+  isVoid: number;
+  reference_code: string;
+  admin_id: number;
+  modified_time: string | null;
+  payment_type: string;
+  payment_status: string;
+  receipt_url: string | null;
+  items: Item[];
+}

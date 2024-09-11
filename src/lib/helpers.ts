@@ -23,3 +23,30 @@ export const filterBeverages = (
     return matchesMainFilter && matchesSubfilter && matchesSearchQuery;
   });
 };
+
+export const getInitials = (name: string): string => {
+  const nameParts = name.split(" ");
+  if (nameParts.length > 1) {
+    return `${nameParts[0][0]}${nameParts[1][0]}`;
+  }
+  return nameParts[0].substring(0, 2);
+};
+
+export const formatDateTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+export const formatTime = (dateString: string): string => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  });
+};
