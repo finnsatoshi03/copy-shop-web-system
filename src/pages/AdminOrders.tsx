@@ -2,11 +2,11 @@ import { useState } from "react";
 import Header from "@/components/header";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Filter, FilterButton } from "@/components/admin-orders/filter-button";
-import { orders } from "@/lib/temp"; // Import the orders data
+import { orders } from "@/lib/temp";
 import OrderList from "@/components/admin-orders/order-list";
 
 export default function AdminOrders() {
-  const [selectedFilter, setSelectedFilter] = useState<Filter>("All");
+  const [selectedFilter, setSelectedFilter] = useState<Filter>("On Progress");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const filters: Filter[] = ["All", "On Progress", "Completed"];
@@ -25,20 +25,41 @@ export default function AdminOrders() {
     return statusMatch && searchMatch;
   });
 
+  const orderCountDescription = (() => {
+    const orderCount = filteredOrders.length;
+    const filterDescription =
+      selectedFilter === "All"
+        ? "all orders"
+        : selectedFilter === "On Progress"
+          ? "orders in progress"
+          : "completed orders";
+
+    if (orderCount === 0) {
+      return `No ${filterDescription}`;
+    } else if (orderCount === 1) {
+      return `1 ${filterDescription.slice(0, -1)}`;
+    } else {
+      return `${orderCount} ${filterDescription}`;
+    }
+  })();
+
   return (
     <div className="space-y-4">
       <Header title="Orders" />
 
       <div className="flex items-start justify-between">
-        <div className="flex gap-2">
-          {filters.map((filter) => (
-            <FilterButton
-              key={filter}
-              label={filter}
-              isActive={selectedFilter === filter}
-              onClick={() => setSelectedFilter(filter)}
-            />
-          ))}
+        <div>
+          <div className="flex gap-2">
+            {filters.map((filter) => (
+              <FilterButton
+                key={filter}
+                label={filter}
+                isActive={selectedFilter === filter}
+                onClick={() => setSelectedFilter(filter)}
+              />
+            ))}
+          </div>
+          <p className="mt-2 text-xs opacity-60">{orderCountDescription}</p>
         </div>
 
         <PlaceholdersAndVanishInput
@@ -49,7 +70,9 @@ export default function AdminOrders() {
         />
       </div>
 
-      <OrderList orders={filteredOrders} />
+      <div className="h-[calc(100vh-13rem)] space-y-2 overflow-y-auto pr-3">
+        <OrderList orders={filteredOrders} />
+      </div>
     </div>
   );
 }

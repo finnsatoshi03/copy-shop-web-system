@@ -8,7 +8,7 @@ interface OrderListProps {
 
 const OrderList: React.FC<OrderListProps> = ({ orders }) => {
   return (
-    <div className="grid grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
       {orders.map((order) => (
         <OrderCard key={order.order_id} order={order} />
       ))}
