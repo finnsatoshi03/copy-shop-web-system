@@ -69,7 +69,7 @@ const CreateNewItemDialog: React.FC<CreateNewItemDialogProps> = ({
           description: beverageData.description,
           price: beverageData.price,
           calories: beverageData.calories,
-          beverageImg: beverageData.image,
+          beverageImg: beverageData.beverageImg,
           category: beverageData.category,
         }
       : {
@@ -83,7 +83,7 @@ const CreateNewItemDialog: React.FC<CreateNewItemDialogProps> = ({
   });
 
   const [imagePreview, setImagePreview] = useState<string | null>(
-    beverageData?.image || null,
+    beverageData?.beverageImg || null,
   );
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 

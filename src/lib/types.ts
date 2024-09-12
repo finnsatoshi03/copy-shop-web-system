@@ -14,7 +14,7 @@ export type Beverage = {
     medium: number;
     large: number;
   };
-  image: string;
+  beverageImg: string;
   isPopular: boolean;
   isFeatured: boolean;
   category: string[];
@@ -22,7 +22,7 @@ export type Beverage = {
 
 export type CartItem = {
   beverage_id: string;
-  image: string;
+  beverageImg: string;
   name: string;
   size: string;
   sugar_level: number;

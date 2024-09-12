@@ -67,9 +67,9 @@ export default function OrderItem() {
     >
       <div className="h-full">
         <div className="relative h-[30vh]">
-          {orderDetails?.image ? (
+          {orderDetails?.beverageImg ? (
             <img
-              src={orderDetails.image}
+              src={orderDetails.beverageImg}
               className="h-full w-full object-cover"
               alt={orderDetails.name}
               style={{

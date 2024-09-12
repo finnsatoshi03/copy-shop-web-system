@@ -7,7 +7,7 @@ import Slider from "react-slick";
 
 import Filters from "@/components/filters";
 import Card from "@/components/card";
-import { beverages } from "@/lib/temp";
+// import { beverages } from "@/lib/temp";
 import { Button } from "@/components/ui/button";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import PaginationControls from "@/components/pagination-controls";
@@ -19,6 +19,9 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 
 import { filterBeverages } from "@/lib/helpers";
 import { Beverage } from "@/lib/types";
+import { useQuery } from "@tanstack/react-query";
+import { getBeverages } from "@/services/Beverage";
+import { API_URL } from "@/services/service";
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -53,6 +56,28 @@ const listContainerVariants = {
 };
 
 export default function Menu() {
+  const {
+    data: beverages,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["beverages"],
+    queryFn: async () => {
+      try {
+        const response = await fetch(`${API_URL}/beverages`);
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        console.log("Fetched data:", data);
+        return data;
+      } catch (error) {
+        console.error("Failed to fetch beverages:", error);
+        throw error;
+      }
+    },
+  });
+
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("All");
   const [subfilters, setSubfilters] = useState<string[]>([]);
@@ -154,6 +179,9 @@ export default function Menu() {
       setOrderDetails(order);
     }
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
     <>

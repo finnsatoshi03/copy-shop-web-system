@@ -72,7 +72,7 @@ export default function LandingPage() {
         />
       </div>
       <motion.div
-        className="absolute bottom-8 left-auto flex w-full justify-center md:bottom-auto md:left-72 md:mt-6 md:justify-start"
+        className="absolute bottom-8 left-auto flex w-full justify-center md:bottom-auto md:left-[28%] md:mt-6 md:justify-start"
         variants={itemVariants}
       >
         <NavLink to="/menu">

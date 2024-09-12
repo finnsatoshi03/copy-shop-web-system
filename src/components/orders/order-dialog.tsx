@@ -89,9 +89,9 @@ export function OrderDialog({
           <div className="flex h-full flex-col justify-between pb-4">
             <div className="-mx-[1.6rem] -mt-8 h-full">
               <div className="relative h-1/2">
-                {orderDetails?.image ? (
+                {orderDetails?.beverageImg ? (
                   <img
-                    src={orderDetails.image}
+                    src={orderDetails.beverageImg}
                     className="h-full w-full object-cover"
                     alt={orderDetails.name}
                     style={{

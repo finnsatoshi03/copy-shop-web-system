@@ -33,7 +33,7 @@ export const useOrderLogic = (
       size: selectedSize,
       quantity: 1,
       total: 0,
-      image: orderDetails?.image || "",
+      image: orderDetails?.beverageImg || "",
     },
   } as any);
 
@@ -94,7 +94,7 @@ export const useOrderLogic = (
       sugar_level: sugar_level,
       quantity: data.quantity,
       total: data.total,
-      image: orderDetails?.image || "",
+      image: orderDetails?.beverageImg || "",
     };
 
     addToCart(cartItem);

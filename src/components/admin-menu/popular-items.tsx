@@ -20,7 +20,7 @@ const PopularItems: React.FC<PopularItemsProps> = ({ popularItems }) => {
             </p>
             <div className="flex h-full gap-2 border-b">
               <img
-                src={beverage.image}
+                src={beverage.beverageImg}
                 className="size-10 rounded-full"
                 alt={beverage.name}
               />

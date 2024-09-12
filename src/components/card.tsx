@@ -20,7 +20,11 @@ export default function Card({
           <Flame size={12} />
         </div>
       )}
-      <img src={data.image} className="w-full rounded-lg" alt={data.name} />
+      <img
+        src={data.beverageImg}
+        className="w-full rounded-lg"
+        alt={data.name}
+      />
       <div className="flex h-full flex-col justify-between">
         <h1 className="mb-2 mt-4 line-clamp-2 font-label text-xs font-semibold md:text-sm">
           {data.name}
