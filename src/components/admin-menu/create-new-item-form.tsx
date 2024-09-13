@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -136,6 +137,25 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       mutateCreateBeverage(finalData);
     }
   };
+
+  const [hasChanges, setHasChanges] = useState(false);
+  const watchedValues = useWatch({ control: form.control });
+
+  const filterRelevantFields = (data: any) => {
+    const { name, description, price, calories, beverageImg, category } = data;
+    return { name, description, price, calories, beverageImg, category };
+  };
+
+  useEffect(() => {
+    if (beverageData) {
+      const filteredDefaultValues = filterRelevantFields(beverageData);
+      const formValues = { ...watchedValues };
+
+      const isDifferent =
+        JSON.stringify(filteredDefaultValues) !== JSON.stringify(formValues);
+      setHasChanges(isDifferent);
+    }
+  }, [watchedValues, beverageData]);
 
   const isLoading = isCreating;
 
@@ -373,7 +393,10 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
             )}
           />
           <div className="mt-4 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
-            <Button type="submit" disabled={isLoading}>
+            <Button
+              type="submit"
+              disabled={(beverageData && !hasChanges) || isLoading}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
