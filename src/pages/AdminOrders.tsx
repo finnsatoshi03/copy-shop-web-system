@@ -21,7 +21,11 @@ export default function AdminOrders() {
         const statusMatch =
           selectedFilter === "All" ||
           (selectedFilter === "On Progress" &&
-            order.order_status === "Preparing") ||
+            (order.order_status === "Preparing" ||
+              order.order_status === "Ready for Pickup")) ||
+          (selectedFilter === "Completed" &&
+            (order.order_status === "Completed" ||
+              order.order_status === "Served")) ||
           order.order_status === selectedFilter;
 
         const searchMatch =

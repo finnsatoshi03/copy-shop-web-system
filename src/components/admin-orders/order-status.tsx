@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle, Check, Timer } from "lucide-react";
+import { CheckCircle, Check, Timer, AlertCircle } from "lucide-react";
 
 // Status configuration with colors, description, and icons
 const statusConfig: {
@@ -10,7 +10,7 @@ const statusConfig: {
     icon: JSX.Element;
   };
 } = {
-  Ready: {
+  "Ready for Pickup": {
     bgColor: "bg-green-200",
     textColor: "text-green-800",
     description: "Ready to be served",
@@ -22,27 +22,33 @@ const statusConfig: {
     description: "Being brewed",
     icon: <Timer size={12} />,
   },
-  Completed: {
+  Served: {
     bgColor: "bg-blue-200",
     textColor: "text-blue-800",
     description: "Order completed",
     icon: <Check size={12} />,
   },
+  Unknown: {
+    bgColor: "bg-gray-200",
+    textColor: "text-gray-800",
+    description: "Status unknown",
+    icon: <AlertCircle size={12} />,
+  },
 };
 
 interface OrderStatusProps {
-  status: string;
+  status: string | null;
 }
 
 const OrderStatus: React.FC<OrderStatusProps> = ({ status }) => {
-  const config = statusConfig[status];
+  const config = status ? statusConfig[status] : statusConfig["Unknown"];
   return (
     <div className="space-y-1 text-right">
       <div
         className={`flex items-center gap-1 text-xs ${config.bgColor} h-fit rounded-md px-3 py-1`}
       >
         {config.icon}
-        <span>{status}</span>
+        <span>{status || "Unknown"}</span>
       </div>
       <p className="flex items-center justify-end gap-1 font-label text-xs">
         <span className={`${config.textColor}`}>•</span>{" "}
