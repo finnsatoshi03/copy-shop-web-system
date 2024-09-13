@@ -221,7 +221,7 @@ export default function Menu() {
                 <motion.div
                   key={index}
                   variants={cardVariants}
-                  className="h-[350px] px-1 py-3 sm:h-[320px] md:px-3 lg:h-[350px]"
+                  className="h-[350px] px-1 py-3 md:h-[320px] md:px-3 lg:h-[350px]"
                 >
                   <Card
                     data={beverage as Beverage}

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { NotifBadge } from "@/components/ui/notif-badge";
 import { useCart } from "@/contexts/CartProvider";
 import { CartSheet } from "@/components/cart/cart-sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Navbar() {
   const { cartItems } = useCart();
@@ -47,12 +48,48 @@ export default function Navbar() {
             <ArrowLeft size={14} />
           </Button>
         ) : (
-          <Button
-            variant="outline"
-            className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
-          >
-            <Menu size={14} />
-          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+              >
+                <Menu size={14} />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" hideCloseButton className="space-y-4">
+              <NavLink
+                to="/home"
+                className="font-sans2 text-2xl font-bold uppercase text-black"
+              >
+                COPY SHOP
+              </NavLink>
+              <ul className="space-y-2">
+                <li>
+                  <NavLink to="/menu">
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start rounded-full border border-gray-300 text-xs uppercase shadow-none"
+                    >
+                      Shop Now
+                    </Button>
+                  </NavLink>
+                </li>
+                {navItems.map((item) => (
+                  <li key={item.label}>
+                    <NavLink to={item.path}>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start rounded-full border border-gray-300 text-xs uppercase shadow-none"
+                      >
+                        {item.label}
+                      </Button>
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </SheetContent>
+          </Sheet>
         )}
       </div>
 
@@ -60,12 +97,14 @@ export default function Navbar() {
       <ul className="hidden lg:flex">
         {navItems.map((item) => (
           <li key={item.label}>
-            <Button
-              variant="outline"
-              className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
-            >
-              <NavLink to={item.path}>{item.label}</NavLink>
-            </Button>
+            <NavLink to={item.path}>
+              <Button
+                variant="outline"
+                className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+              >
+                {item.label}
+              </Button>
+            </NavLink>
           </li>
         ))}
       </ul>
@@ -81,12 +120,14 @@ export default function Navbar() {
       {/* Right-side buttons for larger screens */}
       <ul className="ml-auto justify-end lg:flex">
         <li className="hidden lg:block">
-          <Button
-            variant="outline"
-            className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
-          >
-            <NavLink to="/menu">Shop Now</NavLink>
-          </Button>
+          <NavLink to="/menu">
+            <Button
+              variant="outline"
+              className="rounded-full border border-gray-300 text-xs uppercase shadow-none"
+            >
+              Shop Now
+            </Button>
+          </NavLink>
         </li>
         <li>
           <Button

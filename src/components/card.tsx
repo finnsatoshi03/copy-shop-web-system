@@ -30,7 +30,7 @@ export default function Card({
           {data.name}
         </h1>
         <div className="mb-2 flex flex-col lg:flex-row lg:items-center lg:justify-between">
-          <p className="font-label text-xs">Medium: ${data.price.medium}</p>
+          <p className="font-label text-xs">Medium: ₱{data.price.medium}</p>
           <p className="font-label text-xs opacity-60">
             {data.calories.medium} cal
           </p>
