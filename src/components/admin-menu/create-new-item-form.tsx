@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "../ui/label";
 import { Beverage } from "@/lib/types";
 import { Loader2 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { createBeverage, updateBeverage } from "@/services/apiBeverage";
 
@@ -63,6 +63,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
   beverageData,
   onClose,
 }) => {
+  const queryClient = useQueryClient();
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: beverageData
@@ -111,6 +112,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     mutationFn: (beverage: Partial<Beverage>) => createBeverage(beverage),
     onSuccess: () => {
       toast.success("Beverage created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["beverages"] });
       form.reset();
       onClose?.();
     },
@@ -129,6 +131,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     },
     onSuccess: () => {
       toast.success("Beverage edited successfully!");
+      queryClient.invalidateQueries({ queryKey: ["beverages"] });
       onClose?.();
     },
     onError: (error) => {

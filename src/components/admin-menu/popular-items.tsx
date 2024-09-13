@@ -1,4 +1,5 @@
 import { Beverage } from "@/lib/types";
+import React from "react";
 
 interface PopularItemsProps {
   popularItems: Beverage[];
@@ -14,7 +15,7 @@ const PopularItems: React.FC<PopularItemsProps> = ({ popularItems }) => {
       </div>
       <div className="grid h-[calc(100vh-18.5rem)] grid-cols-[0.1fr_1fr] items-center gap-2 space-y-2 overflow-y-auto">
         {popularItems.map((beverage, index) => (
-          <>
+          <React.Fragment key={index}>
             <p className="flex items-center justify-center text-xs">
               {index + 1 <= 9 ? `0${index + 1}` : index + 1}
             </p>
@@ -29,7 +30,7 @@ const PopularItems: React.FC<PopularItemsProps> = ({ popularItems }) => {
                 <p className="text-xs opacity-60">{beverage.category[0]}</p>
               </div>
             </div>
-          </>
+          </React.Fragment>
         ))}
       </div>
     </div>

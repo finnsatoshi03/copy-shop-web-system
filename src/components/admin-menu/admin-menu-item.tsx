@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Beverage } from "@/lib/types";
-import { EllipsisVertical, Trash2, XCircle } from "lucide-react";
+import { EllipsisVertical, Loader2, Trash2, XCircle } from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
@@ -16,13 +16,29 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import CreateNewItemForm from "@/components/admin-menu/create-new-item-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query"; // Import useQueryClient for refetching
+import { deleteBeverage } from "@/services/apiBeverage";
+import toast from "react-hot-toast";
 
 export default function AdminMenuItem({ data }: { data: Beverage }) {
   const [isOpen, setIsOpen] = useState(false);
+  const queryClient = useQueryClient(); // Initialize queryClient
+
+  const { mutate: mutateDeleteBeverage, isPending: isDeleting } = useMutation({
+    mutationFn: (id: number) => deleteBeverage(id),
+    onSuccess: () => {
+      toast.success("Item deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["beverages"] });
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error("An error occurred. Please try again later.");
+    },
+  });
 
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    console.log(`Deleting item: ${data.name}`);
+    mutateDeleteBeverage(data.id);
   };
 
   const handleMarkUnavailable = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -30,11 +46,13 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
     console.log(`Marking as unavailable: ${data.name}`);
   };
 
+  const isLoading = isDeleting;
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <div
-          className="flex cursor-pointer items-center justify-between pr-2"
+          className="flex cursor-pointer items-center justify-between pr-4"
           onClick={() => setIsOpen(true)}
         >
           <div className="flex gap-2">
@@ -65,8 +83,17 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
                   className="flex h-fit items-center justify-start gap-2 p-0 text-xs text-red-600"
                   onClick={handleDelete}
                 >
-                  <Trash2 size={14} />
-                  Delete
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Deleting..
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 size={14} />
+                      Delete
+                    </>
+                  )}
                 </Button>
                 <Button
                   variant="link"

@@ -28,3 +28,7 @@ export async function updateBeverage(
 
   return response.data;
 }
+
+export async function deleteBeverage(beverageId: number): Promise<void> {
+  await axios.delete(`${API_URL}/beverages/${beverageId}`);
+}
