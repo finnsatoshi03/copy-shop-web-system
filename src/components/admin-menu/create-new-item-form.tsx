@@ -20,7 +20,7 @@ import { Beverage } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { createBeverage } from "@/services/apiBeverage";
+import { createBeverage, updateBeverage } from "@/services/apiBeverage";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -120,6 +120,23 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     },
   });
 
+  const { mutate: mutateEditBeverage, isPending: isEditing } = useMutation({
+    mutationFn: ({ id, beverage }: { id: number; beverage: Beverage }) => {
+      if (beverageData) {
+        return updateBeverage(id, beverage);
+      }
+      throw new Error("Beverage data is undefined");
+    },
+    onSuccess: () => {
+      toast.success("Beverage edited successfully!");
+      onClose?.();
+    },
+    onError: (error) => {
+      console.error("Beverage edit failed:", error);
+      toast.error("Beverage edit failed. Please try again.");
+    },
+  });
+
   const onSubmit = (data: FormSchema) => {
     const finalData = {
       ...data,
@@ -130,10 +147,11 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     };
 
     if (beverageData) {
-      console.log("Editing Item:", finalData);
-      // mutateCreateBeverage({ ...beverageData, ...finalData });
+      mutateEditBeverage({
+        id: beverageData.id,
+        beverage: { ...finalData, id: beverageData.id },
+      });
     } else {
-      // console.log("Creating New Item:", finalData);
       mutateCreateBeverage(finalData);
     }
   };
@@ -157,7 +175,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     }
   }, [watchedValues, beverageData]);
 
-  const isLoading = isCreating;
+  const isLoading = isCreating || isEditing;
 
   return (
     <Form {...form}>

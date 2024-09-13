@@ -16,3 +16,15 @@ export async function createBeverage(
 
   return response.data;
 }
+
+export async function updateBeverage(
+  beverageId: number,
+  beverage: Partial<Beverage>,
+): Promise<Beverage> {
+  const response = await axios.put(
+    `${API_URL}/beverages/${beverageId}`,
+    beverage,
+  );
+
+  return response.data;
+}

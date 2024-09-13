@@ -88,7 +88,10 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
             Edit the details for this item and click save when you're done
           </DialogDescription>
         </DialogHeader>
-        <CreateNewItemForm beverageData={data} />
+        <CreateNewItemForm
+          beverageData={data}
+          onClose={() => setIsOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   );
