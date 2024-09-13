@@ -76,7 +76,11 @@ export function useCartLogic() {
     return parseFloat((subtotal + (subtotal * tipPercentage) / 100).toFixed(2));
   }, [subtotal, tipPercentage]);
 
-  const generatePDF = (order: OrderDetails, orderItems: CartItem[]) => {
+  const generatePDF = (
+    order: OrderDetails,
+    orderItems: CartItem[],
+    reference_code: string,
+  ) => {
     const doc = new jsPDF({
       orientation: "portrait",
       unit: "mm",
@@ -90,12 +94,22 @@ export function useCartLogic() {
     const bodyLeading = 4;
     const footerLeading = 6;
 
-    doc.setFont("Courier", "normal");
+    doc.setFont("Courier", "bold");
     doc.setFontSize(fontSize);
 
     let currentY = 20;
     doc.text("E-Receipt", pageWidth / 2, currentY, { align: "center" });
     currentY += headerLeading;
+
+    doc.setFontSize(14);
+    doc.setFont("Courier", "bold");
+    doc.text(`#${reference_code}`, pageWidth / 2, currentY, {
+      align: "center",
+    });
+    currentY += headerLeading;
+
+    doc.setFont("Courier", "normal");
+    doc.setFontSize(fontSize);
 
     doc.text(`Customer: ${order.customer_name}`, 10, currentY);
     currentY += bodyLeading;
@@ -166,7 +180,6 @@ export function useCartLogic() {
     setPdfGenerated(true);
     doc.save("copyshop-receipt.pdf");
   };
-
   const handleIncrement = (
     beverage_id: string,
     size: string,
@@ -233,11 +246,10 @@ export function useCartLogic() {
     setSubmittedValues({ orderDetails, cartItems: sanitizedCartItems });
 
     placeOrder(orderPayload, {
-      onSuccess: () => {
-        generatePDF(orderDetails, sanitizedCartItems);
+      onSuccess: (response) => {
+        generatePDF(orderDetails, sanitizedCartItems, response.reference_code);
         openThankYouDialog();
-        // if (pdfGenerated) {
-        // }
+        // console.log(response);
       },
     });
   };
