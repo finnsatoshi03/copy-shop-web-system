@@ -7,3 +7,9 @@ export async function createOrder(order: OrderSubmission) {
 
   return response.data;
 }
+
+export async function getOrders() {
+  const response = await axios.get(`${API_URL}/orders`);
+
+  return response.data.orders;
+}

@@ -2,28 +2,41 @@ import { useState } from "react";
 import Header from "@/components/header";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
 import { Filter, FilterButton } from "@/components/admin-orders/filter-button";
-import { orders } from "@/lib/temp";
 import OrderList from "@/components/admin-orders/order-list";
+import { useOrders } from "@/components/admin-orders/useOrders";
+import { Order } from "@/lib/types";
 
 export default function AdminOrders() {
+  const { orders, isLoading, error } = useOrders();
+
   const [selectedFilter, setSelectedFilter] = useState<Filter>("On Progress");
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   const filters: Filter[] = ["All", "On Progress", "Completed"];
 
-  const filteredOrders = orders.filter((order) => {
-    const statusMatch =
-      selectedFilter === "All" ||
-      (selectedFilter === "On Progress" &&
-        order.order_status === "Preparing") ||
-      order.order_status === selectedFilter;
+  const filteredOrders = orders
+    ? orders.filter((order: Order) => {
+        if (!order) return false;
 
-    const searchMatch =
-      order.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.reference_code.toLowerCase().includes(searchTerm.toLowerCase());
+        const statusMatch =
+          selectedFilter === "All" ||
+          (selectedFilter === "On Progress" &&
+            order.order_status === "Preparing") ||
+          order.order_status === selectedFilter;
 
-    return statusMatch && searchMatch;
-  });
+        const searchMatch =
+          (order.customer_name &&
+            order.customer_name
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())) ||
+          (order.reference_code &&
+            order.reference_code
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()));
+
+        return statusMatch && searchMatch;
+      })
+    : [];
 
   const orderCountDescription = (() => {
     const orderCount = filteredOrders.length;
@@ -43,11 +56,14 @@ export default function AdminOrders() {
     }
   })();
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
     <div className="space-y-4">
       <Header title="Orders" />
 
-      <div className="flex items-start justify-between">
+      <div className="flex flex-col-reverse items-start gap-2 lg:flex-row lg:justify-between lg:gap-0">
         <div>
           <div className="flex gap-2">
             {filters.map((filter) => (

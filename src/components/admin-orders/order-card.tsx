@@ -16,7 +16,7 @@ interface OrderCardProps {
 const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   return (
     <div className="flex flex-col gap-3 rounded-lg bg-white p-4">
-      <div className="grid grid-cols-[1fr_auto] justify-between">
+      <div className="grid grid-cols-1 justify-between gap-2 lg:grid-cols-[1fr_auto] lg:gap-0">
         <div className="flex h-full gap-2">
           <Avatar>
             <AvatarFallback>{getInitials(order.customer_name)}</AvatarFallback>
@@ -39,12 +39,16 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
       <Separator />
       <OrderTotal total={order.total_amt} />
       {order.payment_status.toLowerCase() === "pending" ? (
-        <div className="rounded-lg bg-gray-200 px-4 py-3">
-          <h1 className="text-sm font-bold text-green-700">
-            Customers Request:
-          </h1>
-          <p className="font-mono text-xs">{order.customer_msg}</p>
-        </div>
+        <>
+          {order.customer_msg && (
+            <div className="rounded-lg bg-gray-200 px-4 py-3">
+              <h1 className="text-sm font-bold text-green-700">
+                Customers Request:
+              </h1>
+              <p className="font-mono text-xs">{order.customer_msg}</p>
+            </div>
+          )}
+        </>
       ) : (
         <Button className="h-fit bg-yellow-500 py-3 font-semibold text-black hover:bg-yellow-600">
           Mark Paid
