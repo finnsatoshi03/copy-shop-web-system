@@ -14,6 +14,14 @@ export async function getOrders() {
   return response.data.orders;
 }
 
+export async function updateOrderStatus(status: string, order_id: number) {
+  const response = await axios.post(`${API_URL}/update/order`, {
+    status,
+    order_id,
+  });
+  return response.data;
+}
+
 export async function updatePaymentStatus(paymentId: number) {
   const response = await axios.put(`${API_URL}/confirm`, { paymentId });
   return response.data;

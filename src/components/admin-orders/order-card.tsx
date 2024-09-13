@@ -1,7 +1,6 @@
 import React from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials, formatDateTime, formatTime } from "@/lib/helpers";
-
 import { Separator } from "@/components/ui/separator";
 import { Order } from "@/lib/types";
 import OrderStatus from "./order-status";
@@ -53,7 +52,8 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             </div>
           </div>
         </div>
-        <OrderStatus status={order.order_status} />
+        {/* Pass the orderId and status to OrderStatus */}
+        <OrderStatus status={order.order_status} orderId={order.order_id} />
       </div>
       <div className="flex justify-between font-label text-sm">
         <p>{formatDateTime(order.created_time)}</p>
