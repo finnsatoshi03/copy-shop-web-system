@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Beverage } from "@/lib/types";
-import { EllipsisVertical, Loader2, Trash2, XCircle } from "lucide-react";
+import {
+  EllipsisVertical,
+  Loader2,
+  Trash2,
+  XCircle,
+  CheckCircle,
+} from "lucide-react";
 import {
   Popover,
   PopoverTrigger,
@@ -16,13 +22,17 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import CreateNewItemForm from "@/components/admin-menu/create-new-item-form";
-import { useMutation, useQueryClient } from "@tanstack/react-query"; // Import useQueryClient for refetching
-import { deleteBeverage } from "@/services/apiBeverage";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  deleteBeverage,
+  markBeverageAsUnavailable,
+  markBeverageAsAvailable,
+} from "@/services/apiBeverage";
 import toast from "react-hot-toast";
 
 export default function AdminMenuItem({ data }: { data: Beverage }) {
   const [isOpen, setIsOpen] = useState(false);
-  const queryClient = useQueryClient(); // Initialize queryClient
+  const queryClient = useQueryClient();
 
   const { mutate: mutateDeleteBeverage, isPending: isDeleting } = useMutation({
     mutationFn: (id: number) => deleteBeverage(id),
@@ -36,6 +46,32 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
     },
   });
 
+  const { mutate: mutateMarkUnavailable, isPending: isMarkingUnavailable } =
+    useMutation({
+      mutationFn: (id: number) => markBeverageAsUnavailable(id),
+      onSuccess: () => {
+        toast.success("Item marked as unavailable successfully");
+        queryClient.invalidateQueries({ queryKey: ["beverages"] });
+      },
+      onError: (error) => {
+        console.error(error);
+        toast.error("An error occurred. Please try again later.");
+      },
+    });
+
+  const { mutate: mutateMarkAvailable, isPending: isMarkingAvailable } =
+    useMutation({
+      mutationFn: (id: number) => markBeverageAsAvailable(id),
+      onSuccess: () => {
+        toast.success("Item marked as available successfully");
+        queryClient.invalidateQueries({ queryKey: ["beverages"] });
+      },
+      onError: (error) => {
+        console.error(error);
+        toast.error("An error occurred. Please try again later.");
+      },
+    });
+
   const handleDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     mutateDeleteBeverage(data.id);
@@ -43,16 +79,21 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
 
   const handleMarkUnavailable = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    console.log(`Marking as unavailable: ${data.name}`);
+    mutateMarkUnavailable(data.id);
   };
 
-  const isLoading = isDeleting;
+  const handleMarkAvailable = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    mutateMarkAvailable(data.id);
+  };
+
+  const isLoading = isDeleting || isMarkingUnavailable || isMarkingAvailable;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <div
-          className="flex cursor-pointer items-center justify-between pr-4"
+          className={`flex cursor-pointer items-center justify-between pr-4 ${!data.isAvailable && "grayscale"}`}
           onClick={() => setIsOpen(true)}
         >
           <div className="flex gap-2">
@@ -95,14 +136,43 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
                     </>
                   )}
                 </Button>
-                <Button
-                  variant="link"
-                  className="flex h-fit items-center justify-start gap-2 p-0 text-xs"
-                  onClick={handleMarkUnavailable}
-                >
-                  <XCircle size={14} />
-                  Mark Unavailable
-                </Button>
+                {data.isAvailable ? (
+                  <Button
+                    variant="link"
+                    className="flex h-fit items-center justify-start gap-2 p-0 text-xs"
+                    onClick={handleMarkUnavailable}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Removing on List..
+                      </>
+                    ) : (
+                      <>
+                        <XCircle size={14} />
+                        Mark Unavailable
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="link"
+                    className="flex h-fit items-center justify-start gap-2 p-0 text-xs"
+                    onClick={handleMarkAvailable}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Adding to List..
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle size={14} />
+                        Mark Available
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             </PopoverContent>
           </Popover>

@@ -12,10 +12,16 @@ export default function Card({
   onDetails?: (order: Beverage) => void;
 }) {
   return (
-    <div className="grid h-full grid-rows-[auto_1fr_auto] rounded-lg border p-2">
+    <div
+      className={`grid h-full grid-rows-[auto_1fr_auto] rounded-lg border p-2 ${
+        !data.isAvailable ? "grayscale" : ""
+      }`}
+    >
       {data.isPopular && (
         <div
-          className={`absolute ${onList ? "top-5" : "top-8"} rounded-br-lg bg-red-700 px-2 py-0.5 text-xs text-white`}
+          className={`absolute ${
+            onList ? "top-5" : "top-8"
+          } rounded-br-lg bg-red-700 px-2 py-0.5 text-xs text-white`}
         >
           <Flame size={12} />
         </div>
@@ -45,6 +51,7 @@ export default function Card({
       <Button
         className="h-fit w-full border border-green-100 bg-green-100 text-xs text-black shadow-none hover:border-gray-200 hover:bg-transparent"
         onClick={() => onDetails?.(data)}
+        disabled={!data.isAvailable}
       >
         Add to Cart
       </Button>

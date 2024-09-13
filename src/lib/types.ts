@@ -17,6 +17,7 @@ export type Beverage = {
   beverageImg: string;
   isPopular: boolean;
   isFeatured: boolean;
+  isAvailable: boolean;
   category: string[];
 };
 

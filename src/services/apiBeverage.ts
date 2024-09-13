@@ -32,3 +32,15 @@ export async function updateBeverage(
 export async function deleteBeverage(beverageId: number): Promise<void> {
   await axios.delete(`${API_URL}/beverages/${beverageId}`);
 }
+
+export async function markBeverageAsUnavailable(
+  beverageId: number,
+): Promise<void> {
+  await axios.patch(`${API_URL}/beverages/${beverageId}/unavailable`);
+}
+
+export async function markBeverageAsAvailable(
+  beverageId: number,
+): Promise<void> {
+  await axios.patch(`${API_URL}/beverages/${beverageId}/available`);
+}
