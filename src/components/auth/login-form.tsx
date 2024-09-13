@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthProvider";
 import { Button } from "../ui/button";
@@ -25,7 +25,7 @@ const formSchema = z.object({
 });
 
 export default function LoginForm() {
-  const { login } = useAuth();
+  const { login, isLoading } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -37,9 +37,9 @@ export default function LoginForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    // console.log(values);
 
-    login();
+    login(values.username, values.password);
   }
 
   return (
@@ -94,7 +94,14 @@ export default function LoginForm() {
 
         <div className="mt-6">
           <Button type="submit" className="w-full">
-            Sign In
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing In..
+              </>
+            ) : (
+              "Sign In"
+            )}
           </Button>
         </div>
       </form>
