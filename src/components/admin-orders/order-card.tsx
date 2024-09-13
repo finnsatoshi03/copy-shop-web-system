@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { getInitials, formatDateTime, formatTime } from "@/lib/helpers";
 import { Separator } from "@/components/ui/separator";
@@ -11,6 +11,16 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { updatePaymentStatus } from "@/services/apiOrder";
 import { Loader2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/dialog";
+import EditOrderForm from "./edit-order-form";
+import { convertOrderToSubmission } from "@/lib/orderMapper";
 
 interface OrderCardProps {
   order: Order;
@@ -18,6 +28,8 @@ interface OrderCardProps {
 
 const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
   const queryClient = useQueryClient();
+  const [isOpen, setIsOpen] = useState(false);
+
   const { mutate: mutateUpdatePaymentStatus, isPending: isUpdatingPayment } =
     useMutation({
       mutationFn: (id: number) => updatePaymentStatus(id),
@@ -36,6 +48,10 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
     mutateUpdatePaymentStatus(order.payment_id);
   };
 
+  const handleEditOrder = () => {};
+
+  const handleVoidOrder = () => {};
+
   const isLoading = isUpdatingPayment;
 
   return (
@@ -52,7 +68,6 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
             </div>
           </div>
         </div>
-        {/* Pass the orderId and status to OrderStatus */}
         <OrderStatus status={order.order_status} orderId={order.order_id} />
       </div>
       <div className="flex justify-between font-label text-sm">
@@ -73,6 +88,34 @@ const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
               <p className="font-mono text-xs">{order.customer_msg}</p>
             </div>
           )}
+          <div className="flex w-full justify-between gap-2">
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  className="h-fit w-full bg-gray-200 py-3 font-semibold text-green-700 hover:bg-gray-300"
+                  onClick={handleEditOrder}
+                >
+                  Edit Order
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Order #{order.reference_code}</DialogTitle>
+                  <DialogDescription>
+                    Make changes to the order details here. Click save when
+                    you're done.
+                  </DialogDescription>
+                </DialogHeader>
+                <EditOrderForm orderData={convertOrderToSubmission(order)} />
+              </DialogContent>
+            </Dialog>
+            <Button
+              className="h-fit w-full bg-red-500 py-3 font-semibold text-white hover:bg-red-600"
+              onClick={handleVoidOrder}
+            >
+              Void Order
+            </Button>
+          </div>
         </>
       ) : order.payment_status.toLowerCase() !== "paid" ? (
         <Button

@@ -16,7 +16,12 @@ const OrderItems: React.FC<OrderItemsProps> = ({ items }) => {
 
         {items.map((item, index) => (
           <React.Fragment key={index}>
-            <p className="py-1">{item.Name}</p>
+            <p className="py-1">
+              <span className="font-semibold">
+                ({item.Size.charAt(0).toUpperCase()})
+              </span>{" "}
+              {item.Name}
+            </p>
             <p className="py-1 text-center">{item["Sugar Level"]}%</p>
             <p className="py-1 text-center">{item.Quantity}</p>
             <p className="py-1">₱{item["Total Price"]}</p>

@@ -24,3 +24,26 @@ input::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+.popover-content-width-same-as-its-trigger {
+  width: var(--radix-popover-trigger-width);
+  max-height: var(--radix-popover-content-available-height);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px; /* Adjust the width of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ); /* Adjust the color of the scrollbar thumb */
+  border-radius: 4px; /* Adjust the border radius of the scrollbar thumb */
+}
+
+.custom-scrollbar {
+  margin-right: -8px; /* Adjust the negative margin to match the scrollbar width */
+}

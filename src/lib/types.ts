@@ -36,6 +36,7 @@ export interface Item {
   Name: string;
   Description: string;
   "Sugar Level": string;
+  Size: string;
   Price: string;
   Quantity: string;
   "Total Price": string;
