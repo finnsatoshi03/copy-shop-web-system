@@ -8,3 +8,11 @@ export async function getBeverages(): Promise<Beverage[]> {
 
   return response.data;
 }
+
+export async function createBeverage(
+  beverage: Partial<Beverage>,
+): Promise<Beverage> {
+  const response = await axios.post(`${API_URL}/beverages`, beverage);
+
+  return response.data;
+}

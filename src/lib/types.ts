@@ -2,7 +2,7 @@ export type Beverage = {
   id: number;
   name: string;
   description: string;
-  sugarLevel?: string[];
+  sugarLevel?: number[];
   price: {
     small: number;
     medium: number;

@@ -20,11 +20,17 @@ export default function Card({
           <Flame size={12} />
         </div>
       )}
-      <img
-        src={data.beverageImg}
-        className="w-full rounded-lg"
-        alt={data.name}
-      />
+      {data.beverageImg ? (
+        <img
+          src={data.beverageImg}
+          className="w-full rounded-lg"
+          alt={data.name}
+        />
+      ) : (
+        <div className="flex h-44 w-full items-center justify-center rounded-lg bg-gray-100 md:h-32 lg:h-44">
+          <span className="text-gray-500">No image available</span>
+        </div>
+      )}
       <div className="flex h-full flex-col justify-between">
         <h1 className="mb-2 mt-4 line-clamp-2 font-label text-xs font-semibold md:text-sm">
           {data.name}

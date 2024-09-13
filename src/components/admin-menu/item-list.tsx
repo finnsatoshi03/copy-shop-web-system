@@ -15,7 +15,7 @@ const ItemList: React.FC<ItemListProps> = ({ beveragesData }) => {
   );
 
   return (
-    <div className="space-y-4 rounded-lg bg-white px-5 py-4">
+    <div className="row-start-2 space-y-4 rounded-lg bg-white px-5 py-4 md:row-start-1">
       <h1 className="font-label text-lg font-bold">Item List</h1>
       <SearchInput onSearch={setSearchQuery} />
       <div className="h-[calc(100vh-16.5rem)] space-y-2 overflow-y-auto">

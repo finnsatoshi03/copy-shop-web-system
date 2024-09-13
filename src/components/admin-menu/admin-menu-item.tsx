@@ -22,13 +22,17 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
     console.log(`Marking as unavailable: ${data.name}`);
   };
 
+  const handleDialogClose = (open: boolean) => {
+    setIsOpen(open);
+  };
+
   return (
     <div
       className="flex cursor-pointer items-center justify-between pr-2"
       onClick={() => setIsOpen(true)}
     >
       <div className="flex gap-2">
-        <img src={data.image} className="size-16 rounded-md" />
+        <img src={data.beverageImg} className="size-16 rounded-md" />
         <div>
           <h1 className="line-clamp-1 max-w-xl font-bold leading-none">
             {data.name}
@@ -73,7 +77,7 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
       <CreateNewItemDialog
         beverageData={data}
         open={isOpen}
-        onOpenChange={setIsOpen}
+        onOpenChange={handleDialogClose}
       />
     </div>
   );

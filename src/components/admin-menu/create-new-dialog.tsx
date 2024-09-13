@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "../ui/label";
 import { Beverage } from "@/lib/types";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { createBeverage } from "@/services/apiBeverage";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -42,7 +45,16 @@ const formSchema = z.object({
     medium: z.number().positive(),
     large: z.number().positive(),
   }),
-  beverageImg: z.string().url({ message: "Invalid image URL." }),
+  beverageImg: z
+    .string()
+    .nullable()
+    .refine(
+      (value) =>
+        value === null ||
+        value === "" ||
+        z.string().url().safeParse(value).success,
+      { message: "Invalid image URL." },
+    ),
   category: z.array(
     z.string().min(1, { message: "At least one category is required." }),
   ),
@@ -61,6 +73,20 @@ const CreateNewItemDialog: React.FC<CreateNewItemDialogProps> = ({
   open,
   onOpenChange,
 }) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(open || false);
+  useEffect(() => {
+    if (open !== undefined) {
+      setIsDialogOpen(open);
+    }
+  }, [open]);
+
+  const closeDialog = () => {
+    setIsDialogOpen(false);
+    if (onOpenChange) {
+      onOpenChange(false);
+    }
+  };
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: beverageData
@@ -105,9 +131,23 @@ const CreateNewItemDialog: React.FC<CreateNewItemDialogProps> = ({
     }
   };
 
+  const { mutate: mutateCreateBeverage, isPending: isCreating } = useMutation({
+    mutationFn: (beverage: Partial<Beverage>) => createBeverage(beverage),
+    onSuccess: () => {
+      toast.success("Beverage created successfully!");
+      form.reset();
+      closeDialog();
+    },
+    onError: (error) => {
+      console.error("Beverage creation failed:", error);
+      toast.error("Beverage creation failed. Please try again.");
+    },
+  });
+
   const onSubmit = (data: FormSchema) => {
     const finalData = {
       ...data,
+      beverageImg: data.beverageImg || "",
       sugarLevel: beverageData?.sugarLevel || [0, 25, 50, 75, 100],
       isPopular: beverageData?.isPopular || false,
       isFeatured: beverageData?.isFeatured || false,
@@ -115,13 +155,17 @@ const CreateNewItemDialog: React.FC<CreateNewItemDialogProps> = ({
 
     if (beverageData) {
       console.log("Editing Item:", finalData);
+      // mutateCreateBeverage({ ...beverageData, ...finalData });
     } else {
-      console.log("Creating New Item:", finalData);
+      // console.log("Creating New Item:", finalData);
+      mutateCreateBeverage(finalData);
     }
   };
 
+  const isLoading = isCreating;
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       {!beverageData && (
         <DialogTrigger asChild>
           <Button className="flex h-fit w-full items-center gap-2 bg-yellow-500 py-3 uppercase text-black hover:bg-yellow-400">
@@ -389,7 +433,16 @@ const CreateNewItemDialog: React.FC<CreateNewItemDialogProps> = ({
               />
               <DialogFooter className="mt-4">
                 <Button type="submit">
-                  {beverageData ? "Edit Item" : "Save Item"}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {beverageData ? "Editing.." : "Saving.."}
+                    </>
+                  ) : beverageData ? (
+                    "Edit Item"
+                  ) : (
+                    "Save Item"
+                  )}
                 </Button>
               </DialogFooter>
             </div>
