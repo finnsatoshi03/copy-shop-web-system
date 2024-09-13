@@ -158,7 +158,7 @@ const EditOrderForm: React.FC<EditOrderFormProps> = ({
                       <SelectItem value="Credit/Debit Card">
                         Credit/Debit Card
                       </SelectItem>
-                      <SelectItem value="GCash">GCash</SelectItem>
+                      <SelectItem value="Gcash">GCash</SelectItem>
                     </SelectContent>
                   </Select>
                 </FormControl>
