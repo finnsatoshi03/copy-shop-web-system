@@ -26,3 +26,8 @@ export async function updatePaymentStatus(paymentId: number) {
   const response = await axios.put(`${API_URL}/confirm`, { paymentId });
   return response.data;
 }
+
+export async function deleteOrder(order_id: number) {
+  const response = await axios.post(`${API_URL}/order/void/${order_id}`);
+  return response.data;
+}
