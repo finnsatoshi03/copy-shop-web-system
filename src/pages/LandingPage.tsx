@@ -67,7 +67,7 @@ export default function LandingPage() {
         <motion.img
           src="/images/coffee-main.png"
           alt="3d Image of Coffee Cup with a Coffee Beans inside it"
-          className="absolute bottom-24 w-[50%] sm:w-[30%] md:-bottom-16 md:w-[25%] lg:-bottom-24 xl:-bottom-32"
+          className="absolute bottom-24 w-[70%] sm:w-[55%] md:-bottom-16 md:w-[25%] lg:-bottom-24 xl:-bottom-32"
           variants={itemVariants}
         />
       </div>
