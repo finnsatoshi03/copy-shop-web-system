@@ -94,7 +94,7 @@ export const useOrderLogic = (
       sugar_level: sugar_level,
       quantity: data.quantity,
       total: data.total,
-      image: orderDetails?.beverageImg || "",
+      beverageImg: orderDetails?.beverageImg || "",
     };
 
     addToCart(cartItem);

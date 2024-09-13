@@ -60,3 +60,22 @@ export interface Order {
   receipt_url: string | null;
   items: Item[];
 }
+
+export type OrderSubmission = {
+  order: {
+    payment_type: string;
+    customer_name: string;
+    customer_msg: string;
+    total_amt: number;
+    order_type: string;
+  };
+  order_items: {
+    beverage_id: string;
+    sugar_level: number;
+    size: string;
+    price: number;
+    quantity: number;
+    total: number;
+  }[];
+  id: number;
+};

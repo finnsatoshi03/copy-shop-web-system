@@ -45,8 +45,7 @@ export function CartSheet({
   };
 
   const handleOrderSubmit = (data: any) => {
-    onSubmit(data);
-    setThankYouDialogOpen(true);
+    onSubmit(data, () => setThankYouDialogOpen(true));
   };
 
   return (

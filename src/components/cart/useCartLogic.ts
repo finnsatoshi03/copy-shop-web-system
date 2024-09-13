@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useMemo, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { z } from "zod";
 import { useCart } from "@/contexts/CartProvider";
-import { useNavigate } from "react-router-dom";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { CartItem } from "@/lib/types";
+import { CartItem, OrderSubmission } from "@/lib/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createOrder } from "@/services/apiOrder";
+import toast from "react-hot-toast";
 
 interface OrderDetails {
   customer_name: string;
@@ -27,7 +29,6 @@ const formSchema = z.object({
   payment_type: z.string(),
   order_items: z.array(
     z.object({
-      beverage_id: z.string(),
       name: z.string(),
       size: z.string(),
       sugar_level: z.number(),
@@ -39,7 +40,21 @@ const formSchema = z.object({
 });
 
 export function useCartLogic() {
+  const queryClient = useQueryClient();
   const { cartItems, removeFromCart, updateQuantity } = useCart();
+
+  const { mutate: placeOrder } = useMutation({
+    mutationFn: (order: OrderSubmission) => createOrder(order),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order"] });
+      toast.success("Your order is placed successfully!");
+      // if (onClose) onClose();
+    },
+    onError: (error) => {
+      toast.error("An error occurred. Please try again.");
+      console.error(error);
+    },
+  });
 
   const [orderType, setOrderType] = useState<"dine-in" | "take-out">("dine-in");
   const [isEditing, setIsEditing] = useState(false);
@@ -190,27 +205,41 @@ export function useCartLogic() {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const sanitizedCartItems = cartItems.map(({ image, ...item }) => item);
+  // console.log(cartItems);
+
+  const onSubmit = (
+    values: z.infer<typeof formSchema>,
+    openThankYouDialog: () => void,
+  ) => {
+    const sanitizedCartItems = cartItems.map(({ beverageImg, ...item }) => ({
+      ...item,
+      beverageImg,
+    }));
 
     const orderDetails = {
-      order: {
-        customer_name: values.customer_name,
-        customer_msg: values.customer_msg,
-        total_amt: values.total_amt,
-        order_type: orderType,
-        payment_type: selectedMethod,
-      },
-      order_items: sanitizedCartItems,
+      customer_name: values.customer_name,
+      customer_msg: values.customer_msg || "",
+      total_amt: values.total_amt,
+      order_type: orderType,
+      payment_type: selectedMethod,
     };
 
-    setSubmittedValues(orderDetails);
-    setPdfGenerated(false);
+    const orderPayload: OrderSubmission = {
+      order: orderDetails,
+      order_items: sanitizedCartItems,
+      id: 1,
+    };
 
-    generatePDF(orderDetails.order, orderDetails.order_items);
+    setSubmittedValues({ orderDetails, cartItems: sanitizedCartItems });
 
-    // navigate("/");
-    // clearCart();
+    placeOrder(orderPayload, {
+      onSuccess: () => {
+        generatePDF(orderDetails, sanitizedCartItems);
+        openThankYouDialog();
+        // if (pdfGenerated) {
+        // }
+      },
+    });
   };
 
   useEffect(() => {

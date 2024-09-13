@@ -85,6 +85,8 @@ export default function Menu() {
         },
       }))
     : [];
+  // console.log(beveragesData);
+  console.log(beverages);
 
   const filteredItems = filterBeverages(
     beveragesData,

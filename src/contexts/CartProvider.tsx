@@ -33,7 +33,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       return [...prevItems, item];
     });
   };
-
   const removeFromCart = (beverage_id: string, size: string) => {
     setCartItems((prevItems) =>
       prevItems.filter(

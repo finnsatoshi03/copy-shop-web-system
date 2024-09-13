@@ -38,8 +38,7 @@ export default function Cart() {
   const [isThankYouDialogOpen, setThankYouDialogOpen] = useState(false);
 
   const handleOrderSubmit = (data: any) => {
-    onSubmit(data);
-    setThankYouDialogOpen(true);
+    onSubmit(data, () => setThankYouDialogOpen(true));
   };
 
   return (
