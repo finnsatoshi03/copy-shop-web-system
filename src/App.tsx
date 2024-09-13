@@ -28,11 +28,11 @@ import ProtectedRoute from "./components/protected-route";
 import AdminOrders from "./pages/AdminOrders";
 
 const queryClient = new QueryClient({
-  // defaultOptions: {
-  //   queries: {
-  //     staleTime: 0,
-  //   },
-  // },
+  defaultOptions: {
+    queries: {
+      staleTime: 0,
+    },
+  },
 });
 
 function AnimatedRoutes() {

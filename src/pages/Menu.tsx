@@ -19,9 +19,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 
 import { filterBeverages } from "@/lib/helpers";
 import { Beverage } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
-import { getBeverages } from "@/services/Beverage";
-import { API_URL } from "@/services/service";
+import { useBeverages } from "@/hooks/beverages/useBeverages";
 
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -56,27 +54,7 @@ const listContainerVariants = {
 };
 
 export default function Menu() {
-  const {
-    data: beverages,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ["beverages"],
-    queryFn: async () => {
-      try {
-        const response = await fetch(`${API_URL}/beverages`);
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        console.log("Fetched data:", data);
-        return data;
-      } catch (error) {
-        console.error("Failed to fetch beverages:", error);
-        throw error;
-      }
-    },
-  });
+  const { beverages, isLoading, error } = useBeverages();
 
   const [showFilters, setShowFilters] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>("All");
