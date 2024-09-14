@@ -20,7 +20,11 @@ import { Beverage } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { createBeverage, updateBeverage } from "@/services/apiBeverage";
+import {
+  createBeverage,
+  updateBeverage,
+  uploadBeverageImage,
+} from "@/services/apiBeverage";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -99,12 +103,23 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        form.setValue("beverageImg", reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append("image", file);
+
+      mutateUploadImage(formData, {
+        onSuccess: (response: any) => {
+          const filename = response?.filename;
+
+          if (filename) {
+            form.setValue("beverageImg", filename);
+            setImagePreview(URL.createObjectURL(file));
+          }
+        },
+        onError: (error) => {
+          toast.error("Image upload failed. Please try again.");
+          console.error("Image upload failed:", error);
+        },
+      });
     }
   };
 
@@ -119,6 +134,16 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     onError: (error) => {
       console.error("Beverage creation failed:", error);
       toast.error("Beverage creation failed. Please try again.");
+    },
+  });
+
+  const { mutate: mutateUploadImage, isPending: isUploading } = useMutation({
+    mutationFn: (formData: FormData) => uploadBeverageImage(formData),
+    onSuccess: () => {
+      toast.success("Image uploaded successfully!");
+    },
+    onError: () => {
+      toast.error("Image upload failed. Please try again.");
     },
   });
 
@@ -147,6 +172,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       sugarLevel: beverageData?.sugarLevel || [0, 25, 50, 75, 100],
       isPopular: beverageData?.isPopular || false,
       isFeatured: beverageData?.isFeatured || false,
+      isAvailable: beverageData?.isAvailable || true,
     };
 
     if (beverageData) {
@@ -178,7 +204,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     }
   }, [watchedValues, beverageData]);
 
-  const isLoading = isCreating || isEditing;
+  const isLoading = isCreating || isEditing || isUploading;
 
   return (
     <Form {...form}>

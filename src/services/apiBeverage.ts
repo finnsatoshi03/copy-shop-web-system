@@ -17,6 +17,14 @@ export async function createBeverage(
   return response.data;
 }
 
+export async function uploadBeverageImage(formData: FormData) {
+  const response = await axios.post(
+    `${API_URL}/upload-beverage-image`,
+    formData,
+  );
+  return response.data;
+}
+
 export async function updateBeverage(
   beverageId: number,
   beverage: Partial<Beverage>,
