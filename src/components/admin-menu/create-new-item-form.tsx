@@ -48,8 +48,9 @@ const formSchema = z.object({
       (value) =>
         value === null ||
         value === "" ||
-        z.string().url().safeParse(value).success,
-      { message: "Invalid image URL." },
+        z.string().url().safeParse(value).success ||
+        z.string().min(1).safeParse(value).success, // Allow non-empty strings
+      { message: "Invalid image value." },
     ),
   category: z.array(
     z.string().min(1, { message: "At least one category is required." }),
@@ -104,15 +105,17 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     const file = e.target.files?.[0];
     if (file) {
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append("beverageImg", file);
 
       mutateUploadImage(formData, {
         onSuccess: (response: any) => {
           const filename = response?.filename;
+          // Assuming the backend returns a full URL or path to the image
+          const imageUrl = response?.imageUrl || `/path/to/images/${filename}`;
 
-          if (filename) {
-            form.setValue("beverageImg", filename);
-            setImagePreview(URL.createObjectURL(file));
+          if (imageUrl) {
+            form.setValue("beverageImg", imageUrl);
+            setImagePreview(imageUrl);
           }
         },
         onError: (error) => {
@@ -210,6 +213,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
+        encType="multipart/form-data"
         className="grid grid-cols-2 gap-4 space-y-4"
       >
         <div>
