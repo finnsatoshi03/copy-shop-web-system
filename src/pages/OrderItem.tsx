@@ -67,20 +67,15 @@ export default function OrderItem() {
     >
       <div className="h-full">
         <div className="relative h-[30vh]">
-          {orderDetails?.beverageImg ? (
-            <img
-              src={orderDetails.beverageImg}
-              className="h-full w-full object-cover"
-              alt={orderDetails.name}
-              style={{
-                objectPosition: "50% 25%",
-              }}
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gray-100">
-              <span className="text-gray-500">No image available</span>
-            </div>
-          )}
+          <img
+            src={orderDetails.beverageImg || "images/placeholder.jpg"}
+            className="h-full w-full object-cover"
+            alt={orderDetails.name}
+            style={{
+              objectPosition: "50% 25%",
+            }}
+          />
+
           <div className="absolute -bottom-4 right-8 inline-flex items-center gap-4 rounded-full bg-yellow-500 px-2 py-2 font-label text-sm">
             <button type="button" onClick={decrementQuantity}>
               <Minus size={16} />
