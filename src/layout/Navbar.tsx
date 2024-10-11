@@ -62,7 +62,7 @@ export default function Navbar() {
                 to="/home"
                 className="font-sans2 text-2xl font-bold uppercase text-black"
               >
-                COPY SHOP
+                Amiga Café
               </NavLink>
               <ul className="space-y-2">
                 <li>
@@ -114,7 +114,7 @@ export default function Navbar() {
         to="/home"
         className="absolute left-1/2 -translate-x-1/2 transform font-sans2 text-2xl font-bold uppercase text-black"
       >
-        COPY SHOP
+        Amiga Café
       </NavLink>
 
       {/* Right-side buttons for larger screens */}

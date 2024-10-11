@@ -5,6 +5,10 @@
   :root {
     --radius: 0.5rem;
   }
+  @font-face {
+    font-family: "OPTIAura";
+    src: url("../static/fonts/OPTIAura.otf");
+  }
 }
 
 .slick-list {
