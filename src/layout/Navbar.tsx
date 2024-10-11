@@ -60,9 +60,9 @@ export default function Navbar() {
             <SheetContent side="left" hideCloseButton className="space-y-4">
               <NavLink
                 to="/home"
-                className="font-aura text-2xl font-bold text-black"
+                className="font-sans2 text-2xl font-bold text-black"
               >
-                Amiga Café
+                RKYVE Study/Cospace Café
               </NavLink>
               <ul className="space-y-2">
                 <li>
@@ -112,9 +112,9 @@ export default function Navbar() {
       {/* Centered title */}
       <NavLink
         to="/home"
-        className="font-aura absolute left-1/2 -translate-x-1/2 transform text-2xl font-bold text-black"
+        className="absolute left-1/2 -translate-x-1/2 transform font-sans2 text-2xl font-bold text-black"
       >
-        <img src="/images/amiga-cafe-logo.png" className="w-24" />
+        <img src="/images/RKYVE-logo.png" className="w-24" />
       </NavLink>
 
       {/* Right-side buttons for larger screens */}

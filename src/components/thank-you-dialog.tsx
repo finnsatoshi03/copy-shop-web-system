@@ -43,7 +43,7 @@ const ThanksDialog: React.FC<ThanksDialogProps> = ({ open, onClose }) => {
           <Check className="mb-1 size-10 rounded-full bg-green-500 p-2 text-white md:mb-2" />
           <DialogTitle>Thank You!</DialogTitle>
           <DialogDescription className="items-center text-center">
-            <p>Thank you for using Amiga Café!</p>
+            <p>Thank you for using RKYVE Study/Cospace Café!</p>
             <p>
               We appreciate your business and hope you had a great experience.
             </p>

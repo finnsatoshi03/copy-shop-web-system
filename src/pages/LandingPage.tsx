@@ -43,11 +43,11 @@ export default function LandingPage() {
         variants={itemVariants}
       >
         <motion.div variants={itemVariants}>
-          <p className="text-center text-xs">It happens over coffee</p>
-          <h1 className="gradient-text font-aura text-center text-9xl font-black">
-            Amiga
-            <br />
-            Café
+          <p className="text-center text-xs">Study/Cospace Café</p>
+          <h1 className="gradient-text font-sans-2 text-center text-9xl font-black">
+            RKYVE
+            {/* <br />
+            Café */}
           </h1>
         </motion.div>
         <motion.div
@@ -88,9 +88,9 @@ export default function LandingPage() {
         `}</style>
       <div className="flex w-full justify-center">
         <motion.img
-          src="/images/coffee-main.png"
+          src="/images/RKYVE-icon.png"
           alt="3d Image of Coffee Cup with a Coffee Beans inside it"
-          className="absolute bottom-24 hidden w-[70%] sm:w-[55%] md:-bottom-16 md:block md:w-[30%] lg:-bottom-14 xl:-bottom-32"
+          className="absolute bottom-24 hidden w-[70%] sm:w-[55%] md:-bottom-16 md:block md:w-[40%] lg:-bottom-14 xl:-bottom-32 xl:w-[30%]"
           variants={itemVariants}
         />
       </div>

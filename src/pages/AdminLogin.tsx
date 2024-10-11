@@ -10,7 +10,8 @@ export default function AdminLogin() {
           </h2>
           <div className="flex w-full justify-center">
             <p className="mb-6 w-3/4 text-sm opacity-60">
-              Welcome to Amiga Café! Please log in to manage your coffee shop.
+              Welcome to RKYVE Study/Cospace Café! Please log in to manage your
+              coffee shop.
             </p>
           </div>
         </div>
