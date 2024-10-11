@@ -69,6 +69,12 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
   onClose,
 }) => {
   const queryClient = useQueryClient();
+  const [isEditMode] = useState(!!beverageData);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    beverageData?.beverageImg || null,
+  );
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: beverageData
@@ -90,16 +96,11 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
         },
   });
 
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    beverageData?.beverageImg || null,
-  );
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleImageHolderClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  // const handleImageHolderClick = () => {
+  //   if (fileInputRef.current) {
+  //     fileInputRef.current.click();
+  //   }
+  // };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -108,10 +109,8 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       formData.append("beverageImg", file);
 
       mutateUploadImage(formData, {
-        onSuccess: (response: any) => {
-          const filename = response?.filename;
-          // Assuming the backend returns a full URL or path to the image
-          const imageUrl = response?.imageUrl || `/path/to/images/${filename}`;
+        onSuccess: (response: { imageUrl: string }) => {
+          const imageUrl = response.imageUrl;
 
           if (imageUrl) {
             form.setValue("beverageImg", imageUrl);
@@ -132,21 +131,12 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       toast.success("Beverage created successfully!");
       queryClient.invalidateQueries({ queryKey: ["beverages"] });
       form.reset();
+      setImagePreview(null);
       onClose?.();
     },
     onError: (error) => {
       console.error("Beverage creation failed:", error);
       toast.error("Beverage creation failed. Please try again.");
-    },
-  });
-
-  const { mutate: mutateUploadImage, isPending: isUploading } = useMutation({
-    mutationFn: (formData: FormData) => uploadBeverageImage(formData),
-    onSuccess: () => {
-      toast.success("Image uploaded successfully!");
-    },
-    onError: () => {
-      toast.error("Image upload failed. Please try again.");
     },
   });
 
@@ -168,6 +158,16 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     },
   });
 
+  const { mutate: mutateUploadImage, isPending: isUploading } = useMutation({
+    mutationFn: (formData: FormData) => uploadBeverageImage(formData),
+    onSuccess: () => {
+      toast.success("Image uploaded successfully!");
+    },
+    onError: () => {
+      toast.error("Image upload failed. Please try again.");
+    },
+  });
+
   const onSubmit = (data: FormSchema) => {
     const finalData = {
       ...data,
@@ -175,13 +175,13 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       sugarLevel: beverageData?.sugarLevel || [0, 25, 50, 75, 100],
       isPopular: beverageData?.isPopular || false,
       isFeatured: beverageData?.isFeatured || false,
-      isAvailable: beverageData?.isAvailable || true,
+      isAvailable: true,
     };
 
-    if (beverageData) {
+    if (isEditMode) {
       mutateEditBeverage({
-        id: beverageData.id,
-        beverage: { ...finalData, id: beverageData.id },
+        id: beverageData!.id,
+        beverage: { ...finalData, id: beverageData!.id },
       });
     } else {
       mutateCreateBeverage(finalData);
@@ -227,7 +227,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
                 <FormControl>
                   <div className="flex flex-col">
                     <div
-                      onClick={handleImageHolderClick}
+                      onClick={() => fileInputRef.current?.click()}
                       className="cursor-pointer"
                     >
                       {imagePreview ? (
@@ -242,7 +242,6 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
                         </div>
                       )}
                     </div>
-
                     <input
                       type="file"
                       accept="image/*"
@@ -451,9 +450,9 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {beverageData ? "Editing.." : "Saving.."}
+                  {isEditMode ? "Editing.." : "Saving.."}
                 </>
-              ) : beverageData ? (
+              ) : isEditMode ? (
                 "Edit Item"
               ) : (
                 "Save Item"

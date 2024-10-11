@@ -112,7 +112,7 @@ export default function Navbar() {
       {/* Centered title */}
       <NavLink
         to="/home"
-        className="absolute left-1/2 -translate-x-1/2 transform font-sans2 text-2xl font-bold uppercase text-black"
+        className="font-aura absolute left-1/2 -translate-x-1/2 transform text-2xl font-bold text-black"
       >
         Amiga Café
       </NavLink>
