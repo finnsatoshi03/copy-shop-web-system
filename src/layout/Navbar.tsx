@@ -60,7 +60,7 @@ export default function Navbar() {
             <SheetContent side="left" hideCloseButton className="space-y-4">
               <NavLink
                 to="/home"
-                className="font-sans2 text-2xl font-bold uppercase text-black"
+                className="font-aura text-2xl font-bold text-black"
               >
                 Amiga Café
               </NavLink>
@@ -114,7 +114,7 @@ export default function Navbar() {
         to="/home"
         className="font-aura absolute left-1/2 -translate-x-1/2 transform text-2xl font-bold text-black"
       >
-        Amiga Café
+        <img src="/images/amiga-cafe-logo.png" className="w-24" />
       </NavLink>
 
       {/* Right-side buttons for larger screens */}
