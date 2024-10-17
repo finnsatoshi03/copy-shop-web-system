@@ -14,7 +14,7 @@ export default function Sidebar() {
   return (
     <nav className="flex h-full flex-col justify-between bg-white p-6">
       <div>
-        <h1 className="mb-6 text-2xl font-bold">COPYSHOP</h1>
+        <h1 className="mb-6 text-2xl font-bold">Amiga Café</h1>
         <ul className="space-y-2">
           <li>
             <NavLink

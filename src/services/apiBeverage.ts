@@ -17,12 +17,16 @@ export async function createBeverage(
   return response.data;
 }
 
-export async function uploadBeverageImage(formData: FormData) {
+export async function uploadBeverageImage(
+  formData: FormData,
+): Promise<{ imageUrl: string }> {
   const response = await axios.post(
     `${API_URL}/upload-beverage-image`,
     formData,
   );
-  return response.data;
+  return {
+    imageUrl: `${API_URL}/beverage-image/${response.data.filename}`,
+  };
 }
 
 export async function updateBeverage(

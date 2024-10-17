@@ -65,7 +65,7 @@ export default function AdminMenu() {
                 Create New Item
               </Button>
             </DialogTrigger>
-            <DialogContent className="w-2/3 sm:max-w-4xl">
+            <DialogContent className="min-w-[90vw]">
               <DialogHeader>
                 <DialogTitle>Create New Item</DialogTitle>
                 <DialogDescription>

@@ -173,9 +173,9 @@ export default function Menu() {
         exit="exit"
       >
         <h1 className="text-xl font-bold leading-4">
-          Your Coffee,
+          It happens
           <br />
-          <span className="text-lg font-normal">Your Way, Your QR.</span>
+          <span className="text-lg font-normal">over coffee</span>
         </h1>
 
         <div className="my-4 flex items-stretch gap-2">

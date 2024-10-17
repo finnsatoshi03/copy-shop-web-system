@@ -97,7 +97,10 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
           onClick={() => setIsOpen(true)}
         >
           <div className="flex gap-2">
-            <img src={data.beverageImg} className="size-16 rounded-md" />
+            <img
+              src={data.beverageImg || "images/placeholder.jpg"}
+              className="size-16 rounded-md"
+            />
             <div>
               <h1 className="line-clamp-1 max-w-xl font-bold leading-none">
                 {data.name}
@@ -178,7 +181,7 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
           </Popover>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-2/3 sm:max-w-4xl">
+      <DialogContent className="w-[90vw]">
         <DialogHeader>
           <DialogTitle>Edit Item</DialogTitle>
           <DialogDescription>

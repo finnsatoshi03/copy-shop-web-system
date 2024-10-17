@@ -32,29 +32,52 @@ const itemVariants = {
 export default function LandingPage() {
   return (
     <motion.div
-      className="relative h-[calc(100vh-10rem)] w-full overflow-hidden bg-[#f1ede1]"
+      className="relative grid h-[calc(100vh-10rem)] w-full overflow-hidden bg-[#f1ede1] md:grid-cols-2"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
       exit="exit"
     >
-      <motion.div className="container flex flex-col" variants={itemVariants}>
+      <motion.div
+        className="container flex flex-col items-center justify-center space-y-8"
+        variants={itemVariants}
+      >
+        <motion.div variants={itemVariants}>
+          <p className="text-center text-xs">It happens over coffee</p>
+          <h1 className="gradient-text font-aura text-center text-9xl font-black">
+            Amiga
+            <br />
+            Café
+          </h1>
+        </motion.div>
         <motion.div
-          className="flex w-full sm:justify-center sm:text-center md:mb-3 md:mt-6"
+          className="flex w-full items-center sm:w-1/3 md:w-3/4"
           variants={itemVariants}
         >
-          <p className="order-last w-full text-xs md:order-first lg:w-1/3">
+          <p className="text-center text-xs md:text-sm">
             Scan our QR code and step into a new era of coffee ordering. Enjoy
             personalized menus, quick service, and delicious brews tailored to
             your taste. Copyshop: Your coffee, your way, your QR.
           </p>
         </motion.div>
-        <motion.h1
-          className="gradient-text order-first mb-3 mt-6 w-full text-center font-sans2 text-[4rem] font-black leading-[4rem] md:order-last md:mb-0 md:mt-0 md:text-[8rem] md:leading-[7rem] lg:text-[10rem] lg:leading-[9rem] xl:text-[14rem] xl:leading-[13rem]"
+        <motion.div
+          className="flex w-full justify-center"
           variants={itemVariants}
         >
-          COPYSHOP
-        </motion.h1>
+          <NavLink to="/menu">
+            <Button
+              className="rounded-full text-xs md:text-sm"
+              variant={"secondary"}
+            >
+              Order Now
+            </Button>
+          </NavLink>
+          <NavLink to="/menu">
+            <Button className="rounded-full">
+              <ChevronRight className="size-3 md:size-4" />
+            </Button>
+          </NavLink>
+        </motion.div>
       </motion.div>
       <style>{`
       .gradient-text {
@@ -67,28 +90,10 @@ export default function LandingPage() {
         <motion.img
           src="/images/coffee-main.png"
           alt="3d Image of Coffee Cup with a Coffee Beans inside it"
-          className="absolute bottom-24 w-[70%] sm:w-[55%] md:-bottom-16 md:w-[25%] lg:-bottom-24 xl:-bottom-32"
+          className="absolute bottom-24 hidden w-[70%] sm:w-[55%] md:-bottom-16 md:block md:w-[30%] lg:-bottom-14 xl:-bottom-32"
           variants={itemVariants}
         />
       </div>
-      <motion.div
-        className="absolute bottom-8 left-auto flex w-full justify-center md:bottom-auto md:left-[28%] md:mt-6 md:justify-start"
-        variants={itemVariants}
-      >
-        <NavLink to="/menu">
-          <Button
-            className="rounded-full text-xs md:text-sm"
-            variant={"secondary"}
-          >
-            Order Now
-          </Button>
-        </NavLink>
-        <NavLink to="/menu">
-          <Button className="rounded-full">
-            <ChevronRight className="size-3 md:size-4" />
-          </Button>
-        </NavLink>
-      </motion.div>
     </motion.div>
   );
 }
