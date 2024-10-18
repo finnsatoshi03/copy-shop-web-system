@@ -98,7 +98,7 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
         >
           <div className="flex gap-2">
             <img
-              src={data.beverageImg || "images/placeholder.jpg"}
+              src={data.beverageImg || "/images/placeholder.jpg"}
               className="size-16 rounded-md"
             />
             <div>

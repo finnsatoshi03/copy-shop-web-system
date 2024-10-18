@@ -45,34 +45,42 @@ export function OrderDialog({
     );
   }
 
+  const hasOnlyMediumPrice =
+    orderDetails.price &&
+    !orderDetails.price.small &&
+    orderDetails.price.medium &&
+    !orderDetails.price.large;
+
   const sizes: { [key: string]: string } = {
     small: "S",
     medium: "M",
     large: "L",
   };
 
-  const sizeButtons = Object.keys(sizes).map((sizeKey) => {
-    const isAvailable = orderDetails?.price?.[sizeKey];
-    const isSelected = selectedSize === sizeKey;
+  const sizeButtons = !hasOnlyMediumPrice
+    ? Object.keys(sizes).map((sizeKey) => {
+        const isAvailable = orderDetails?.price?.[sizeKey];
+        const isSelected = selectedSize === sizeKey;
 
-    return (
-      <button
-        type="button"
-        key={sizeKey}
-        onClick={() => handleSizeSelect(sizeKey)}
-        disabled={!isAvailable}
-        className={`rounded-lg px-5 py-3 font-label text-sm font-bold ${
-          isAvailable
-            ? isSelected
-              ? "bg-yellow-500 text-white"
-              : "bg-yellow-100 text-black"
-            : "cursor-not-allowed bg-gray-100 text-gray-400 opacity-50"
-        }`}
-      >
-        {sizes[sizeKey]}
-      </button>
-    );
-  });
+        return (
+          <button
+            type="button"
+            key={sizeKey}
+            onClick={() => handleSizeSelect(sizeKey)}
+            disabled={!isAvailable}
+            className={`rounded-lg px-5 py-3 font-label text-sm font-bold ${
+              isAvailable
+                ? isSelected
+                  ? "bg-yellow-500 text-white"
+                  : "bg-yellow-100 text-black"
+                : "cursor-not-allowed bg-gray-100 text-gray-400 opacity-50"
+            }`}
+          >
+            {sizes[sizeKey]}
+          </button>
+        );
+      })
+    : null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -114,38 +122,53 @@ export function OrderDialog({
                   <h1 className="w-2/3 font-label text-xl font-bold">
                     {orderDetails.name || "Unnamed Beverage"}
                   </h1>
-                  <div className="flex items-center gap-1 text-xs">
-                    <Flame size={12} className="text-orange-600" />
-                    <p className="leading-none">{calories || "N/A"} Calories</p>
-                  </div>
+                  {calories > 0 && (
+                    <div className="flex items-center gap-1 text-xs">
+                      <Flame size={12} className="text-orange-600" />
+                      <p className="leading-none">{calories} Calories</p>
+                    </div>
+                  )}
                 </div>
                 <p className="font-label text-xs opacity-60">
                   {orderDetails.description || "No description available"}
                 </p>
 
-                <h2 className="mt-4 font-label font-bold">Sizes for you</h2>
-                <div className="mt-1 flex items-center gap-2">
-                  {sizeButtons}
-                </div>
+                {!hasOnlyMediumPrice! &&
+                  orderDetails.sugarLevel &&
+                  orderDetails.sugarLevel.length < 1 && (
+                    <>
+                      <h2 className="mt-4 font-label font-bold">
+                        Sizes for you
+                      </h2>
+                      <div className="mt-1 flex items-center gap-2">
+                        {sizeButtons}
+                      </div>
+                    </>
+                  )}
 
-                <h2 className="mt-4 font-label font-bold">Sugar Level</h2>
-                <div className="mt-1 flex flex-col">
-                  <Slider
-                    defaultValue={[0]}
-                    max={100}
-                    min={0}
-                    step={25}
-                    value={[sugar_level]}
-                    onValueChange={handleSugarLevelChange}
-                  />
-                  <div className="mt-2 flex justify-between text-xs font-bold">
-                    <span>0%</span>
-                    <span>25%</span>
-                    <span>50%</span>
-                    <span>75%</span>
-                    <span>100%</span>
-                  </div>
-                </div>
+                {orderDetails.sugarLevel &&
+                  orderDetails.sugarLevel.length > 1 && (
+                    <>
+                      <h2 className="mt-4 font-label font-bold">Sugar Level</h2>
+                      <div className="mt-1 flex flex-col">
+                        <Slider
+                          defaultValue={[0]}
+                          max={100}
+                          min={0}
+                          step={25}
+                          value={orderDetails.sugarLevel}
+                          onValueChange={handleSugarLevelChange}
+                        />
+                        <div className="mt-2 flex justify-between text-xs font-bold">
+                          <span>0%</span>
+                          <span>25%</span>
+                          <span>50%</span>
+                          <span>75%</span>
+                          <span>100%</span>
+                        </div>
+                      </div>
+                    </>
+                  )}
               </div>
             </div>
 
