@@ -54,6 +54,7 @@ const formSchema = z.object({
   largeSize: z.number().optional(),
   hasCalories: z.boolean().default(false),
   calories: z.number().optional(),
+  noSugar: z.boolean().default(false),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -99,6 +100,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
               : beverageData.calories?.medium ||
                 beverageData.calories?.small ||
                 beverageData.calories?.large,
+          noSugar: false,
         }
       : {
           name: "",
@@ -110,6 +112,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
           isMediumAvailable: false,
           isLargeAvailable: false,
           hasCalories: false,
+          noSugar: false,
         },
   });
 
@@ -211,7 +214,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
         : 0,
       beverageImg: data.beverageImg || "",
       category: data.category,
-      sugarLevel: [0, 25, 50, 75, 100],
+      sugarLevel: data.noSugar ? [0] : [0, 25, 50, 75, 100],
       isPopular: beverageData?.isPopular || false,
       isFeatured: beverageData?.isFeatured || false,
       isAvailable: true,
@@ -506,12 +509,28 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
 
         {/* Calories Fields */}
         <div>
+          <FormField
+            control={form.control}
+            name="noSugar"
+            render={({ field }) => (
+              <FormItem className="mb-2 flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>No Sugar</FormLabel>
+              </FormItem>
+            )}
+          />
+
           {/* Calories Checkbox and Input */}
           <FormField
             control={form.control}
             name="hasCalories"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+              <FormItem className="mb-4 flex flex-row items-start space-x-3 space-y-0">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
