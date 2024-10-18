@@ -57,7 +57,7 @@ export default function LandingPage() {
           <p className="text-center text-xs md:text-sm">
             Scan our QR code and step into a new era of coffee ordering. Enjoy
             personalized menus, quick service, and delicious brews tailored to
-            your taste. Amiga Cafe: Your coffee, your way, your QR.
+            your taste. RKYVE: Your coffee, your way, your QR.
           </p>
         </motion.div>
         <motion.div
