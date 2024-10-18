@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "../ui/label";
 import { Beverage } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -31,7 +31,16 @@ const formSchema = z.object({
   description: z
     .string()
     .min(10, { message: "Description must be at least 10 characters." }),
-  price: z.number().optional(),
+  price: z.object({
+    small: z.number().positive({ message: "Price must be a positive number." }),
+    medium: z.number().positive(),
+    large: z.number().positive(),
+  }),
+  calories: z.object({
+    small: z.number().positive(),
+    medium: z.number().positive(),
+    large: z.number().positive(),
+  }),
   beverageImg: z
     .string()
     .nullable()
@@ -40,20 +49,12 @@ const formSchema = z.object({
         value === null ||
         value === "" ||
         z.string().url().safeParse(value).success ||
-        z.string().min(1).safeParse(value).success,
+        z.string().min(1).safeParse(value).success, // Allow non-empty strings
       { message: "Invalid image value." },
     ),
   category: z.array(
     z.string().min(1, { message: "At least one category is required." }),
   ),
-  isSmallAvailable: z.boolean().default(false),
-  isMediumAvailable: z.boolean().default(false),
-  isLargeAvailable: z.boolean().default(false),
-  smallSize: z.number().optional(),
-  mediumSize: z.number().optional(),
-  largeSize: z.number().optional(),
-  hasCalories: z.boolean().default(false),
-  calories: z.number().optional(),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -68,56 +69,37 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
   onClose,
 }) => {
   const queryClient = useQueryClient();
-  const [isEditMode] = useState(!!beverageData);
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    beverageData?.beverageImg || null,
-  );
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: beverageData
       ? {
           name: beverageData.name,
           description: beverageData.description,
-          price:
-            beverageData.price.medium ||
-            beverageData.price.small ||
-            beverageData.price.large,
+          price: beverageData.price,
+          calories: beverageData.calories,
           beverageImg: beverageData.beverageImg,
           category: beverageData.category,
-          isSmallAvailable: !!beverageData.price.small,
-          isMediumAvailable: !!beverageData.price.medium,
-          isLargeAvailable: !!beverageData.price.large,
-          smallSize: beverageData.price.small || undefined,
-          mediumSize: beverageData.price.medium || undefined,
-          largeSize: beverageData.price.large || undefined,
-          hasCalories: !!beverageData.calories,
-          calories:
-            typeof beverageData.calories === "number"
-              ? beverageData.calories
-              : beverageData.calories?.medium ||
-                beverageData.calories?.small ||
-                beverageData.calories?.large,
         }
       : {
           name: "",
           description: "",
-          price: 0,
+          price: { small: 0, medium: 0, large: 0 },
+          calories: { small: 0, medium: 0, large: 0 },
           beverageImg: "",
           category: [""],
-          isSmallAvailable: false,
-          isMediumAvailable: false,
-          isLargeAvailable: false,
-          hasCalories: false,
         },
   });
 
-  // const handleImageHolderClick = () => {
-  //   if (fileInputRef.current) {
-  //     fileInputRef.current.click();
-  //   }
-  // };
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    beverageData?.beverageImg || null,
+  );
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleImageHolderClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -126,8 +108,10 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       formData.append("beverageImg", file);
 
       mutateUploadImage(formData, {
-        onSuccess: (response: { imageUrl: string }) => {
-          const imageUrl = response.imageUrl;
+        onSuccess: (response: any) => {
+          const filename = response?.filename;
+          // Assuming the backend returns a full URL or path to the image
+          const imageUrl = response?.imageUrl || `/path/to/images/${filename}`;
 
           if (imageUrl) {
             form.setValue("beverageImg", imageUrl);
@@ -148,12 +132,21 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       toast.success("Beverage created successfully!");
       queryClient.invalidateQueries({ queryKey: ["beverages"] });
       form.reset();
-      setImagePreview(null);
       onClose?.();
     },
     onError: (error) => {
       console.error("Beverage creation failed:", error);
       toast.error("Beverage creation failed. Please try again.");
+    },
+  });
+
+  const { mutate: mutateUploadImage, isPending: isUploading } = useMutation({
+    mutationFn: (formData: FormData) => uploadBeverageImage(formData),
+    onSuccess: () => {
+      toast.success("Image uploaded successfully!");
+    },
+    onError: () => {
+      toast.error("Image upload failed. Please try again.");
     },
   });
 
@@ -175,90 +168,22 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     },
   });
 
-  const { mutate: mutateUploadImage, isPending: isUploading } = useMutation({
-    mutationFn: (formData: FormData) => uploadBeverageImage(formData),
-    onSuccess: () => {
-      toast.success("Image uploaded successfully!");
-    },
-    onError: () => {
-      toast.error("Image upload failed. Please try again.");
-    },
-  });
-
   const onSubmit = (data: FormSchema) => {
-    const eitherSizeAvailable =
-      data.isSmallAvailable || data.isMediumAvailable || data.isLargeAvailable;
-    if (!eitherSizeAvailable) form.resetField("price");
-
     const finalData = {
-      name: data.name,
-      description: data.description,
-      price: {
-        small: data.isSmallAvailable ? data.smallSize : 0,
-        medium: eitherSizeAvailable
-          ? 0
-          : data.isMediumAvailable
-            ? data.mediumSize
-            : data.price || 0,
-        large: data.isLargeAvailable ? data.largeSize : 0,
-      },
-      calories: data.hasCalories
-        ? {
-            small: data.isSmallAvailable ? data.calories : 0,
-            medium: data.isMediumAvailable ? data.calories : 0,
-            large: data.isLargeAvailable ? data.calories : 0,
-          }
-        : 0,
+      ...data,
       beverageImg: data.beverageImg || "",
-      category: data.category,
-      sugarLevel: [0, 25, 50, 75, 100],
+      sugarLevel: beverageData?.sugarLevel || [0, 25, 50, 75, 100],
       isPopular: beverageData?.isPopular || false,
       isFeatured: beverageData?.isFeatured || false,
-      isAvailable: true,
+      isAvailable: beverageData?.isAvailable || true,
     };
 
-    // Ensure at least one size is available and set price/calories
-    if (
-      !data.isSmallAvailable &&
-      !data.isMediumAvailable &&
-      !data.isLargeAvailable
-    ) {
-      finalData.price.medium = data.price;
-      if (data.hasCalories && typeof finalData.calories !== "number") {
-        if (finalData.calories) {
-          finalData.calories.medium = data.calories;
-        }
-      }
-    }
-
-    // Remove undefined values
-    (
-      Object.keys(finalData.price) as Array<keyof typeof finalData.price>
-    ).forEach(
-      (key) =>
-        finalData.price[key] === undefined && delete finalData.price[key],
-    );
-    if (finalData.calories) {
-      (
-        Object.keys(finalData.calories) as Array<
-          keyof typeof finalData.calories
-        >
-      ).forEach(
-        (key) =>
-          finalData.calories &&
-          finalData.calories[key] === undefined &&
-          delete finalData.calories[key],
-      );
-    }
-
-    if (isEditMode) {
-      // console.log(finalData);
+    if (beverageData) {
       mutateEditBeverage({
-        id: beverageData!.id,
-        beverage: { ...finalData, id: beverageData!.id },
+        id: beverageData.id,
+        beverage: { ...finalData, id: beverageData.id },
       });
     } else {
-      // console.log(finalData);
       mutateCreateBeverage(finalData);
     }
   };
@@ -289,7 +214,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       <form
         onSubmit={form.handleSubmit(onSubmit)}
         encType="multipart/form-data"
-        className="grid grid-cols-2 gap-4 space-y-4 md:grid-cols-3"
+        className="grid grid-cols-2 gap-4 space-y-4"
       >
         <div>
           {/* Image Upload */}
@@ -302,12 +227,12 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
                 <FormControl>
                   <div className="flex flex-col">
                     <div
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={handleImageHolderClick}
                       className="cursor-pointer"
                     >
                       {imagePreview ? (
                         <img
-                          src={imagePreview || "images/placeholder.jpg"}
+                          src={imagePreview}
                           alt="Preview"
                           className="h-32 w-32 rounded-full object-cover"
                         />
@@ -317,6 +242,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
                         </div>
                       )}
                     </div>
+
                     <input
                       type="file"
                       accept="image/*"
@@ -368,17 +294,16 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
         <div>
           {/* Price Fields */}
           <div>
-            {!(
-              form.watch("isSmallAvailable") ||
-              form.watch("isMediumAvailable") ||
-              form.watch("isLargeAvailable")
-            ) && (
+            <Label className="leading-none">Price</Label>
+            <div className="grid grid-cols-3 gap-2">
               <FormField
                 control={form.control}
-                name="price"
+                name="price.small"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel className="text-xs leading-none">
+                      Small
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -391,158 +316,116 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
                   </FormItem>
                 )}
               />
-            )}
-
-            <div className="mt-4 space-y-2">
               <FormField
                 control={form.control}
-                name="isSmallAvailable"
+                name="price.medium"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormItem>
+                    <FormLabel className="text-xs leading-none">
+                      Medium
+                    </FormLabel>
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
+                      <Input
+                        type="number"
+                        placeholder="5.0"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
-                    <FormLabel>Small Size Available</FormLabel>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="isMediumAvailable"
+                name="price.large"
                 render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                  <FormItem>
+                    <FormLabel className="text-xs leading-none">
+                      Large
+                    </FormLabel>
                     <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
+                      <Input
+                        type="number"
+                        placeholder="5.5"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
                       />
                     </FormControl>
-                    <FormLabel>Medium Size Available</FormLabel>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="isLargeAvailable"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormLabel>Large Size Available</FormLabel>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            {/* Conditional Size Inputs */}
-            {form.watch("isSmallAvailable") && (
-              <FormField
-                control={form.control}
-                name="smallSize"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Small Size (oz)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="8"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            {form.watch("isMediumAvailable") && (
-              <FormField
-                control={form.control}
-                name="mediumSize"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Medium Size (oz)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="12"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-            {form.watch("isLargeAvailable") && (
-              <FormField
-                control={form.control}
-                name="largeSize"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Large Size (oz)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="16"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
           </div>
-        </div>
 
-        {/* Calories Fields */}
-        <div>
-          {/* Calories Checkbox and Input */}
-          <FormField
-            control={form.control}
-            name="hasCalories"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <FormLabel>Has Calories Information</FormLabel>
-              </FormItem>
-            )}
-          />
+          {/* Calories Fields */}
+          <div>
+            <Label className="leading-none">Calories</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <FormField
+                control={form.control}
+                name="calories.small"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs leading-none">
+                      Small
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="180"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="calories.medium"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs leading-none">
+                      Medium
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="220"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="calories.large"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs leading-none">
+                      Large
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="260"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
 
-          {form.watch("hasCalories") && (
-            <FormField
-              control={form.control}
-              name="calories"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Calories</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="200"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          )}
           <FormField
             control={form.control}
             name="category"
@@ -568,9 +451,9 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {isEditMode ? "Editing.." : "Saving.."}
+                  {beverageData ? "Editing.." : "Saving.."}
                 </>
-              ) : isEditMode ? (
+              ) : beverageData ? (
                 "Edit Item"
               ) : (
                 "Save Item"

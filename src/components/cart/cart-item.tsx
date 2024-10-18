@@ -24,10 +24,7 @@ export function CartItem({
 }) {
   return (
     <div className="grid grid-cols-[100px_1fr_auto] items-center gap-4">
-      <img
-        src={item.beverageImg || "images/placeholder.jpg"}
-        className="rounded-xl"
-      />
+      <img src={item.beverageImg} className="rounded-xl" />
       <div className="h-[80%] w-[80%] font-label">
         <h1 className="font-bold">{item.name}</h1>
         <p className="flex items-end gap-2 font-bold">
