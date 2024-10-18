@@ -37,10 +37,7 @@ const replacements = [
   },
   {
     pattern: /host:\s*['"][^'"]+['"]/g,    
-    replacement: (ipAddress) => `host: '${ipAddress}'`
-  }
-];
-
+}
 
 function updateFiles() {
   const ipAddress = getLocalIPAddress();
@@ -53,11 +50,9 @@ function updateFiles() {
       }
 
       const { pattern, replacement } = replacements[index];
-
       
       const updatedData = data.replace(pattern, replacement(ipAddress));
 
-      
       fs.writeFile(filePath, updatedData, 'utf8', (err) => {
         if (err) {
           console.error(`Error writing file: ${filePath}`, err);
@@ -68,6 +63,5 @@ function updateFiles() {
     });
   });
 }
-
 
 updateFiles();
