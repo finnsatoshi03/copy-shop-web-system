@@ -100,7 +100,10 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
               : beverageData.calories?.medium ||
                 beverageData.calories?.small ||
                 beverageData.calories?.large,
-          noSugar: false,
+          noSugar:
+            beverageData.sugarLevel && beverageData.sugarLevel?.length > 1
+              ? false
+              : true,
         }
       : {
           name: "",
@@ -198,11 +201,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       description: data.description,
       price: {
         small: data.isSmallAvailable ? data.smallSize : 0,
-        medium: eitherSizeAvailable
-          ? 0
-          : data.isMediumAvailable
-            ? data.mediumSize
-            : data.price || 0,
+        medium: data.isMediumAvailable ? data.mediumSize : data.price || 0,
         large: data.isLargeAvailable ? data.largeSize : 0,
       },
       calories: data.hasCalories

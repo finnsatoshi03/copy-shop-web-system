@@ -131,7 +131,7 @@ export default function OrderItem() {
                   max={100}
                   min={0}
                   step={25}
-                  value={orderDetails.sugarLevel}
+                  value={[sugar_level]}
                   onValueChange={handleSugarLevelChange}
                 />
                 <div className="mt-2 flex justify-between text-xs font-bold">

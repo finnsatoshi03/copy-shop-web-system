@@ -41,8 +41,7 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
       queryClient.invalidateQueries({ queryKey: ["beverages"] });
     },
     onError: (error) => {
-      console.error(error);
-      toast.error("An error occurred. Please try again later.");
+      toast.error(error.response.data);
     },
   });
 

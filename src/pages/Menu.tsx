@@ -250,7 +250,7 @@ export default function Menu() {
               </motion.div>
             ))}
           </div>
-          {currentItems.length >= 12 && (
+          {totalPages > 1 && (
             <PaginationControls
               currentPage={currentPage}
               totalPages={totalPages}

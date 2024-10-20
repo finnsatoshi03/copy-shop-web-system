@@ -9,16 +9,28 @@ export const filterBeverages = (
   return beveragesData.filter((beverage) => {
     const matchesMainFilter =
       activeFilter === "All" ||
-      (activeFilter === "Coffee" && beverage.category.includes("coffee")) ||
-      (activeFilter === "Food" && beverage.category.includes("Food"));
+      (activeFilter === "Coffee" &&
+        beverage.category.some((cat) =>
+          cat.toLowerCase().includes("coffee"),
+        )) ||
+      (activeFilter === "Food" &&
+        beverage.category.some((cat) => cat.toLowerCase().includes("food")));
 
     const matchesSubfilter =
       subfilters.length === 0 ||
-      subfilters.some((subfilter) => beverage.category.includes(subfilter));
+      subfilters.some((subfilter) =>
+        beverage.category.some((cat) =>
+          cat.toLowerCase().includes(subfilter.toLowerCase()),
+        ),
+      );
 
     const matchesSearchQuery =
+      searchQuery === "" ||
       beverage.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      beverage.description.toLowerCase().includes(searchQuery.toLowerCase());
+      beverage.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      beverage.category.some((cat) =>
+        cat.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
 
     return matchesMainFilter && matchesSubfilter && matchesSearchQuery;
   });
