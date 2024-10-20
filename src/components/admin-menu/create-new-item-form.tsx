@@ -79,41 +79,41 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     resolver: zodResolver(formSchema),
     defaultValues: beverageData
       ? {
-        name: beverageData.name,
-        description: beverageData.description,
-        price:
-          beverageData.price.medium ||
-          beverageData.price.small ||
-          beverageData.price.large,
-        beverageImg: beverageData.beverageImg,
-        category: beverageData.category,
-        isSmallAvailable: !!beverageData.price.small,
-        isMediumAvailable: !!beverageData.price.medium,
-        isLargeAvailable: !!beverageData.price.large,
-        smallSize: beverageData.price.small || undefined,
-        mediumSize: beverageData.price.medium || undefined,
-        largeSize: beverageData.price.large || undefined,
-        hasCalories: !!beverageData.calories,
-        calories:
-          typeof beverageData.calories === "number"
-            ? beverageData.calories
-            : beverageData.calories?.medium ||
-            beverageData.calories?.small ||
-            beverageData.calories?.large,
-        noSugar: false,
-      }
+          name: beverageData.name,
+          description: beverageData.description,
+          price:
+            beverageData.price.medium ||
+            beverageData.price.small ||
+            beverageData.price.large,
+          beverageImg: beverageData.beverageImg,
+          category: beverageData.category,
+          isSmallAvailable: !!beverageData.price.small,
+          isMediumAvailable: !!beverageData.price.medium,
+          isLargeAvailable: !!beverageData.price.large,
+          smallSize: beverageData.price.small || undefined,
+          mediumSize: beverageData.price.medium || undefined,
+          largeSize: beverageData.price.large || undefined,
+          hasCalories: !!beverageData.calories,
+          calories:
+            typeof beverageData.calories === "number"
+              ? beverageData.calories
+              : beverageData.calories?.medium ||
+                beverageData.calories?.small ||
+                beverageData.calories?.large,
+          noSugar: beverageData.sugarLevel?.[0] === 0,
+        }
       : {
-        name: "",
-        description: "",
-        price: 0,
-        beverageImg: "",
-        category: [""],
-        isSmallAvailable: false,
-        isMediumAvailable: false,
-        isLargeAvailable: false,
-        hasCalories: false,
-        noSugar: false,
-      },
+          name: "",
+          description: "",
+          price: 0,
+          beverageImg: "",
+          category: [""],
+          isSmallAvailable: false,
+          isMediumAvailable: false,
+          isLargeAvailable: false,
+          hasCalories: false,
+          noSugar: false,
+        },
   });
 
   // const handleImageHolderClick = () => {
@@ -198,17 +198,15 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       description: data.description,
       price: {
         small: data.isSmallAvailable ? data.smallSize : 0,
-        medium: data.isMediumAvailable
-          ? data.mediumSize
-          : data.price || 0,
+        medium: data.isMediumAvailable ? data.mediumSize : data.price || 0,
         large: data.isLargeAvailable ? data.largeSize : 0,
       },
       calories: data.hasCalories
         ? {
-          small: data.isSmallAvailable ? data.calories : 0,
-          medium: data.isMediumAvailable ? data.calories : 0,
-          large: data.isLargeAvailable ? data.calories : 0,
-        }
+            small: data.isSmallAvailable ? data.calories : 0,
+            medium: data.isMediumAvailable ? data.calories : 0,
+            large: data.isLargeAvailable ? data.calories : 0,
+          }
         : 0,
       beverageImg: data.beverageImg || "",
       category: data.category,
@@ -374,25 +372,25 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
               form.watch("isMediumAvailable") ||
               form.watch("isLargeAvailable")
             ) && (
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Price</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          placeholder="4.5"
-                          {...field}
-                          onChange={(e) => field.onChange(Number(e.target.value))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="4.5"
+                        {...field}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <div className="mt-4 space-y-2">
               <FormField
