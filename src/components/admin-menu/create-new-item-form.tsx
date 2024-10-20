@@ -100,7 +100,10 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
               : beverageData.calories?.medium ||
                 beverageData.calories?.small ||
                 beverageData.calories?.large,
-          noSugar: beverageData.sugarLevel?.[0] === 0,
+          noSugar:
+            beverageData.sugarLevel && beverageData.sugarLevel?.length > 1
+              ? false
+              : true,
         }
       : {
           name: "",
