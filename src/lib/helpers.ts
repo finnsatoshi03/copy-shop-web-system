@@ -36,6 +36,10 @@ export const filterBeverages = (
   });
 };
 
+export const cleanCategory = (category) => {
+  return category.replace(/\b(coffee\s*)+\b/gi, 'coffee').trim();
+};
+
 export const getInitials = (name: string): string => {
   const nameParts = name.split(" ");
   if (nameParts.length > 1) {

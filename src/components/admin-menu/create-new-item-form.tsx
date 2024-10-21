@@ -193,15 +193,25 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
 
   const onSubmit = (data: FormSchema) => {
     const eitherSizeAvailable =
-      data.isSmallAvailable || data.isMediumAvailable || data.isLargeAvailable;
-    if (!eitherSizeAvailable) form.resetField("price");
+      form.watch("isSmallAvailable") || form.watch("isMediumAvailable") || form.watch("isLargeAvailable");
+
+    const sizeCount =
+      Number(form.watch("isSmallAvailable")) +
+      Number(form.watch("isMediumAvailable")) +
+      Number(form.watch("isLargeAvailable"));
+
+    if (eitherSizeAvailable || sizeCount > 1) {
+    // Reset the price only if more than one size is available and any field changes
+      form.resetField("price");
+    }
+
 
     const finalData = {
       name: data.name,
       description: data.description,
       price: {
         small: data.isSmallAvailable ? data.smallSize : 0,
-        medium: data.isMediumAvailable ? data.mediumSize : data.price || 0,
+        medium: data.isMediumAvailable ? data.mediumSize :  0,
         large: data.isLargeAvailable ? data.largeSize : 0,
       },
       calories: data.hasCalories

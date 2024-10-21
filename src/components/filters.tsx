@@ -83,17 +83,17 @@ const filterItems = [
       "Bottled Beverages",
     ],
   },
-  {
-    icon: <Sandwich size={14} />,
-    label: "Food",
-    subfilters: [
-      "Hot Breakfast",
-      "Oatmeal & Yogurt",
-      "Bakery",
-      "Lunch",
-      "Snacks & Sweets",
-    ],
-  },
+  // {
+  //   icon: <Sandwich size={14} />,
+  //   label: "Food",
+  //   subfilters: [
+  //     "Hot Breakfast",
+  //     "Oatmeal & Yogurt",
+  //     "Bakery",
+  //     "Lunch",
+  //     "Snacks & Sweets",
+  //   ],
+  // },
 ];
 
 export default function Filters({

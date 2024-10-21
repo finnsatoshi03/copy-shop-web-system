@@ -57,6 +57,7 @@ export const useOrderLogic = (
   useEffect(() => {
     if (orderDetails) {
       const price = orderDetails?.price?.[selectedSize] || 0;
+      setValue("price", price);
       setValue("total", price * quantity);
       setCalories(
         orderDetails.calories?.[
@@ -78,6 +79,7 @@ export const useOrderLogic = (
     }
   };
 
+
   const incrementQuantity = () => setValue("quantity", quantity + 1);
   const decrementQuantity = () =>
     setValue("quantity", Math.max(1, quantity - 1));
@@ -96,6 +98,7 @@ export const useOrderLogic = (
       total: data.total,
       beverageImg: orderDetails?.beverageImg || "",
     };
+    // console.log(cartItem)
 
     addToCart(cartItem);
     if (onClose) {
