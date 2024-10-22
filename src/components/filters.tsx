@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { FilterItem } from "./filter-item";
-import { Coffee, Sandwich, UtensilsCrossed } from "lucide-react";
+import { Coffee, UtensilsCrossed } from "lucide-react";
+import { Beverage } from "@/lib/types";
 
 const filterContainerVariants = {
   hidden: {},
@@ -43,68 +44,90 @@ interface FiltersProps {
   showFilters: boolean;
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
-  subfilters: string[]; // Added subfilters to props
-  setSubfilters: React.Dispatch<React.SetStateAction<string[]>>; // Type for updating subfilters
+  subfilters: string[];
+  setSubfilters: React.Dispatch<React.SetStateAction<string[]>>;
+  beveragesData: Beverage[];
 }
 
-const filterItems = [
-  {
-    icon: <UtensilsCrossed size={14} />,
-    label: "All",
-    subfilters: [
-      "Electric Elixirs",
-      "Brewed Brilliance",
-      "Chill-Out Classics",
-      "Refreshed Revivals",
-      "Frosted Fusions",
-      "Iced Tea & Lemonade",
-      "Hot Teas",
-      "Milk, Juice & More",
-      "Bottled Beverages",
-      "Hot Breakfast",
-      "Oatmeal & Yogurt",
-      "Bakery",
-      "Lunch",
-      "Snacks & Sweets",
-    ],
-  },
-  {
-    icon: <Coffee size={14} />,
-    label: "Coffee",
-    subfilters: [
-      "Electric Elixirs",
-      "Brewed Brilliance",
-      "Chill-Out Classics",
-      "Refreshed Revivals",
-      "Frosted Fusions",
-      "Iced Tea & Lemonade",
-      "Hot Teas",
-      "Milk, Juice & More",
-      "Bottled Beverages",
-    ],
-  },
-  {
-    icon: <Sandwich size={14} />,
-    label: "Food",
-    subfilters: [
-      "Hot Breakfast",
-      "Oatmeal & Yogurt",
-      "Bakery",
-      "Lunch",
-      "Snacks & Sweets",
-    ],
-  },
-];
+interface CategoryData {
+  icon: JSX.Element;
+  label: string;
+  subfilters: string[];
+}
+
+const getCategoryIcon = (category: string) => {
+  switch (category.toUpperCase()) {
+    case "BEVERAGE":
+      return <Coffee size={14} />;
+    default:
+      return <UtensilsCrossed size={14} />;
+  }
+};
 
 export default function Filters({
   showFilters,
   activeFilter,
   setActiveFilter,
-  subfilters, // Accept subfilters as a prop
+  subfilters,
   setSubfilters,
+  beveragesData,
 }: FiltersProps) {
+  // Generate dynamic filter items based on beveragesData
+  const generateFilterItems = (): CategoryData[] => {
+    // Create "All" category first
+    const allSubCategories = new Set<string>();
+    beveragesData.forEach((beverage) => {
+      if (Array.isArray(beverage.subCategories)) {
+        beverage.subCategories.forEach((subCategory) => {
+          allSubCategories.add(subCategory);
+        });
+      }
+    });
+
+    const filterItems: CategoryData[] = [
+      {
+        icon: <UtensilsCrossed size={14} />,
+        label: "All",
+        subfilters: Array.from(allSubCategories),
+      },
+    ];
+
+    // Get unique categories
+    const categories = new Set(
+      beveragesData.map((beverage) =>
+        beverage.category.toString().toUpperCase(),
+      ),
+    );
+
+    // For each category, collect its subcategories
+    categories.forEach((category) => {
+      const categorySubfilters = new Set<string>();
+
+      beveragesData
+        .filter(
+          (beverage) => beverage.category.toString().toUpperCase() === category,
+        )
+        .forEach((beverage) => {
+          if (Array.isArray(beverage.subCategories)) {
+            beverage.subCategories.forEach((subCategory) => {
+              categorySubfilters.add(subCategory);
+            });
+          }
+        });
+
+      filterItems.push({
+        icon: getCategoryIcon(category),
+        label: category,
+        subfilters: Array.from(categorySubfilters),
+      });
+    });
+
+    return filterItems;
+  };
+
+  const filterItems = generateFilterItems();
+
   const handleFilterClick = (label: string) => {
-    // Reset subfilters when changing main filter
     setSubfilters([]);
     setActiveFilter(activeFilter === label ? "" : label);
   };
@@ -112,16 +135,15 @@ export default function Filters({
   const handleSubfilterClick = (subfilter: string) => {
     setSubfilters((prevSubfilters: string[]) => {
       if (prevSubfilters.includes(subfilter)) {
-        return prevSubfilters.filter((s) => s !== subfilter); // Remove if already selected
+        return prevSubfilters.filter((s) => s !== subfilter);
       } else {
-        return [...prevSubfilters, subfilter]; // Add if not selected
+        return [...prevSubfilters, subfilter];
       }
     });
   };
 
   return (
     <div>
-      {/* Main Filters */}
       <motion.div
         className="my-2 flex flex-wrap gap-2"
         variants={filterContainerVariants}
@@ -132,7 +154,7 @@ export default function Filters({
         {filterItems.map((item, index) => (
           <motion.div key={index} variants={filterItemVariants}>
             <FilterItem
-              icon={item.icon} // Pass icon as prop
+              icon={item.icon}
               label={item.label}
               onClick={() => handleFilterClick(item.label)}
               isActive={activeFilter === item.label}
@@ -141,9 +163,8 @@ export default function Filters({
         ))}
       </motion.div>
 
-      {/* Subfilters */}
       <AnimatePresence>
-        {activeFilter && activeFilter !== "All" && (
+        {activeFilter && activeFilter !== "" && (
           <motion.div
             className="my-2 flex flex-wrap gap-2"
             initial="hidden"
@@ -159,7 +180,7 @@ export default function Filters({
                   variants={subfilterVariants}
                   onClick={() => handleSubfilterClick(subfilter)}
                   className={`flex cursor-pointer items-center gap-1 rounded-lg border px-3 py-1 text-sm ${
-                    subfilters.includes(subfilter) // Check if subfilter is active
+                    subfilters.includes(subfilter)
                       ? "bg-zinc-600 text-white"
                       : "bg-white"
                   }`}
