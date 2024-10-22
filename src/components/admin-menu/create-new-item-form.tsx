@@ -17,7 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Beverage } from "@/lib/types";
-import { Loader2 } from "lucide-react";
+import { Check, ChevronDown, Loader2 } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import {
@@ -25,6 +25,18 @@ import {
   updateBeverage,
   uploadBeverageImage,
 } from "@/services/apiBeverage";
+import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "../ui/command";
+import { CATEGORIES } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -43,9 +55,11 @@ const formSchema = z.object({
         z.string().min(1).safeParse(value).success,
       { message: "Invalid image value." },
     ),
-  category: z.array(
-    z.string().min(1, { message: "At least one category is required." }),
-  ),
+  category: z.array(z.enum(["BEVERAGE", "FOOD"])),
+  subCategory: z
+    .string()
+    .min(1, { message: "Please select or enter a sub-category" }),
+  isCustomSubCategory: z.boolean().default(false),
   isSmallAvailable: z.boolean().default(false),
   isMediumAvailable: z.boolean().default(false),
   isLargeAvailable: z.boolean().default(false),
@@ -86,7 +100,11 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
             beverageData.price.small ||
             beverageData.price.large,
           beverageImg: beverageData.beverageImg,
-          category: beverageData.category,
+          category: beverageData?.category?.map((c) => c.toUpperCase()) || [
+            "BEVERAGE",
+          ],
+          subCategory: beverageData?.subCategories || "",
+          // isCustomSubCategory: false,
           isSmallAvailable: !!beverageData.price.small,
           isMediumAvailable: !!beverageData.price.medium,
           isLargeAvailable: !!beverageData.price.large,
@@ -124,6 +142,13 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
   //     fileInputRef.current.click();
   //   }
   // };
+
+  const selectedCategory = form.watch("category")[0]?.toUpperCase();
+  const currentSubCategories =
+    selectedCategory && CATEGORIES[selectedCategory]
+      ? CATEGORIES[selectedCategory].subCategories
+      : [];
+  const isCustom = form.watch("isCustomSubCategory");
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -193,7 +218,9 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
 
   const onSubmit = (data: FormSchema) => {
     const eitherSizeAvailable =
-      form.watch("isSmallAvailable") || form.watch("isMediumAvailable") || form.watch("isLargeAvailable");
+      form.watch("isSmallAvailable") ||
+      form.watch("isMediumAvailable") ||
+      form.watch("isLargeAvailable");
 
     const sizeCount =
       Number(form.watch("isSmallAvailable")) +
@@ -201,17 +228,16 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
       Number(form.watch("isLargeAvailable"));
 
     if (eitherSizeAvailable || sizeCount > 1) {
-    // Reset the price only if more than one size is available and any field changes
+      // Reset the price only if more than one size is available and any field changes
       form.resetField("price");
     }
-
 
     const finalData = {
       name: data.name,
       description: data.description,
       price: {
         small: data.isSmallAvailable ? data.smallSize : 0,
-        medium: data.isMediumAvailable ? data.mediumSize :  0,
+        medium: data.isMediumAvailable ? data.mediumSize : 0,
         large: data.isLargeAvailable ? data.largeSize : 0,
       },
       calories: data.hasCalories
@@ -223,6 +249,9 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
         : 0,
       beverageImg: data.beverageImg || "",
       category: data.category,
+      subCategories: Array.isArray(data.subCategory)
+        ? data.subCategory
+        : [data.subCategory],
       sugarLevel: data.noSugar ? [0] : [0, 25, 50, 75, 100],
       isPopular: beverageData?.isPopular || false,
       isFeatured: beverageData?.isFeatured || false,
@@ -264,7 +293,10 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
     }
 
     if (isEditMode) {
-      // console.log(finalData);
+      // console.log({
+      //   id: beverageData!.id,
+      //   beverage: { ...finalData, id: beverageData!.id },
+      // });
       mutateEditBeverage({
         id: beverageData!.id,
         beverage: { ...finalData, id: beverageData!.id },
@@ -571,6 +603,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
               )}
             />
           )}
+          {/* Category Toggle */}
           <FormField
             control={form.control}
             name="category"
@@ -578,12 +611,122 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
               <FormItem>
                 <FormLabel>Category</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="Specialty Teas"
-                    {...field}
-                    onChange={(e) => field.onChange([e.target.value])}
-                  />
+                  <ToggleGroup
+                    type="single"
+                    value={field.value[0]}
+                    onValueChange={(value) => {
+                      if (value) {
+                        field.onChange([value]);
+                        form.setValue("subCategory", "");
+                        form.setValue("isCustomSubCategory", false);
+                      }
+                    }}
+                  >
+                    <ToggleGroupItem value="BEVERAGE" className="w-full border">
+                      {CATEGORIES.BEVERAGE.label}
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="FOOD" className="w-full border">
+                      {CATEGORIES.FOOD.label}
+                    </ToggleGroupItem>
+                  </ToggleGroup>
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Sub-Category Field - switches between combobox and input based on isCustomSubCategory */}
+          <FormField
+            control={form.control}
+            name="subCategory"
+            render={({ field }) => (
+              <FormItem className="mt-2 flex flex-col">
+                <FormLabel>Sub-Category</FormLabel>
+                {!isCustom ? (
+                  // Combobox for predefined options
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "w-full justify-between",
+                            !field.value && "text-muted-foreground",
+                          )}
+                        >
+                          {field.value || "Select sub-category"}
+                          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search sub-category..." />
+                        <CommandList>
+                          <CommandEmpty>No sub-category found.</CommandEmpty>
+                          <CommandGroup>
+                            {currentSubCategories.map((subCat) => (
+                              <CommandItem
+                                value={subCat}
+                                key={subCat}
+                                onSelect={() => {
+                                  form.setValue("subCategory", subCat);
+                                  form.setValue("isCustomSubCategory", false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    subCat === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {subCat}
+                              </CommandItem>
+                            ))}
+                            <CommandItem
+                              value="custom"
+                              onSelect={() => {
+                                form.setValue("subCategory", "");
+                                form.setValue("isCustomSubCategory", true);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  isCustom ? "opacity-100" : "opacity-0",
+                                )}
+                              />
+                              Custom
+                            </CommandItem>
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                ) : (
+                  // Input field for custom sub-category
+                  <FormControl>
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter custom sub-category"
+                        {...field}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          form.setValue("isCustomSubCategory", false);
+                          form.setValue("subCategory", "");
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </FormControl>
+                )}
                 <FormMessage />
               </FormItem>
             )}

@@ -7,37 +7,78 @@ export const filterBeverages = (
   searchQuery: string,
 ) => {
   return beveragesData.filter((beverage) => {
+    // Check if the beverage matches the main category filter
     const matchesMainFilter =
+      activeFilter === "" ||
       activeFilter === "All" ||
-      (activeFilter === "Coffee" &&
-        beverage.category.some((cat) =>
-          cat.toLowerCase().includes("coffee"),
-        )) ||
-      (activeFilter === "Food" &&
-        beverage.category.some((cat) => cat.toLowerCase().includes("food")));
+      beverage.category.toString().toUpperCase() === activeFilter;
 
+    // Check if the beverage matches any of the selected subfilters
     const matchesSubfilter =
       subfilters.length === 0 ||
       subfilters.some((subfilter) =>
-        beverage.category.some((cat) =>
-          cat.toLowerCase().includes(subfilter.toLowerCase()),
+        beverage.subCategories?.some(
+          (subCategory) =>
+            subCategory.toLowerCase() === subfilter.toLowerCase(),
         ),
       );
 
+    // Check if the beverage matches the search query
     const matchesSearchQuery =
       searchQuery === "" ||
       beverage.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       beverage.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      beverage.category.some((cat) =>
-        cat.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
+      beverage.subCategories?.some((subCategory) =>
+        subCategory.toLowerCase().includes(searchQuery.toLowerCase()),
+      ) ||
+      beverage.category
+        .toString()
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
 
     return matchesMainFilter && matchesSubfilter && matchesSearchQuery;
   });
 };
 
-export const cleanCategory = (category) => {
-  return category.replace(/\b(coffee\s*)+\b/gi, 'coffee').trim();
+// Helper function to clean category names if needed
+export const cleanCategory = (category: string): string => {
+  // Remove any special characters and standardize the format
+  return category
+    .replace(/[^\w\s]/gi, "")
+    .trim()
+    .toUpperCase();
+};
+
+// Helper function to get unique categories from beverages data
+export const getUniqueCategories = (beveragesData: Beverage[]): string[] => {
+  const categories = new Set(
+    beveragesData.map((beverage) => beverage.category.toString().toUpperCase()),
+  );
+  return Array.from(categories);
+};
+
+// Helper function to get unique subcategories for a specific category
+export const getSubcategoriesForCategory = (
+  beveragesData: Beverage[],
+  category: string,
+): string[] => {
+  const subcategories = new Set<string>();
+
+  beveragesData
+    .filter(
+      (beverage) =>
+        category === "All" ||
+        beverage.category.toString().toUpperCase() === category,
+    )
+    .forEach((beverage) => {
+      if (Array.isArray(beverage.subCategories)) {
+        beverage.subCategories.forEach((subCategory) => {
+          subcategories.add(subCategory);
+        });
+      }
+    });
+
+  return Array.from(subcategories);
 };
 
 export const getInitials = (name: string): string => {
