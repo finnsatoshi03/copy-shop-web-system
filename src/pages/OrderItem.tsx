@@ -29,36 +29,42 @@ export default function OrderItem() {
     large: "L",
   };
 
-  const hasOnlyMediumPrice =
+  const hasOnlyMediumSize =
     orderDetails.price &&
     !orderDetails.price.small &&
     orderDetails.price.medium &&
     !orderDetails.price.large;
 
-  const sizeButtons = !hasOnlyMediumPrice
-    ? Object.keys(sizes).map((sizeKey) => {
-        const isAvailable = orderDetails?.price?.[sizeKey];
-        const isSelected = selectedSize === sizeKey;
+  const isFoodVariation =
+    hasOnlyMediumSize &&
+    ((orderDetails.sugarLevel?.length === 1 &&
+      orderDetails.sugarLevel[0] === 0) ||
+      orderDetails.sugarLevel?.length === 0);
 
-        return (
-          <button
-            type="button"
-            key={sizeKey}
-            onClick={() => handleSizeSelect(sizeKey)}
-            disabled={!isAvailable}
-            className={`rounded-lg px-5 py-3 font-label text-sm font-bold ${
-              isAvailable
-                ? isSelected
-                  ? "bg-yellow-500 text-white"
-                  : "bg-yellow-100 text-black"
-                : "cursor-not-allowed bg-gray-100 text-gray-400 opacity-50"
-            }`}
-          >
-            {sizes[sizeKey]}
-          </button>
-        );
-      })
-    : null;
+  const sizeButtons =
+    !isFoodVariation &&
+    Object.keys(sizes).map((sizeKey) => {
+      const isAvailable = orderDetails?.price?.[sizeKey];
+      const isSelected = selectedSize === sizeKey;
+
+      return (
+        <button
+          type="button"
+          key={sizeKey}
+          onClick={() => handleSizeSelect(sizeKey)}
+          disabled={!isAvailable}
+          className={`rounded-lg px-5 py-3 font-label text-sm font-bold ${
+            isAvailable
+              ? isSelected
+                ? "bg-yellow-500 text-white"
+                : "bg-yellow-100 text-black"
+              : "cursor-not-allowed bg-gray-100 text-gray-400 opacity-50"
+          }`}
+        >
+          {sizes[sizeKey]}
+        </button>
+      );
+    });
 
   if (!orderDetails) {
     return <p>No order details available.</p>;
@@ -111,16 +117,12 @@ export default function OrderItem() {
             {orderDetails.description || "No description available"}
           </p>
 
-          {!hasOnlyMediumPrice! &&
-            orderDetails.sugarLevel &&
-            orderDetails.sugarLevel.length < 1 && (
-              <>
-                <h2 className="mt-4 font-label font-bold">Sizes for you</h2>
-                <div className="mt-1 flex items-center gap-2">
-                  {sizeButtons}
-                </div>
-              </>
-            )}
+          {!isFoodVariation && (
+            <>
+              <h2 className="mt-4 font-label font-bold">Sizes for you</h2>
+              <div className="mt-1 flex items-center gap-2">{sizeButtons}</div>
+            </>
+          )}
 
           {orderDetails.sugarLevel && orderDetails.sugarLevel.length > 1 && (
             <>
