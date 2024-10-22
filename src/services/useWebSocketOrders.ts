@@ -6,7 +6,7 @@ export function useWebSocketOrders() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const socket = new WebSocket("ws://192.168.225.152:4000/api/v1/orders");
+    const socket = new WebSocket("ws://localhost:4000/api/v1/orders");
 
     socket.onopen = () => {
       console.log("WebSocket connection established");

@@ -70,7 +70,7 @@ export default function Menu() {
   const beveragesData: Beverage[] = beverages
     ? beverages.map((beverage: any) => ({
         ...beverage,
-        category: [`${beverage.category} coffee`],
+        category: [`${beverage.category}`],
         price: {
           ...beverage.price,
           small: beverage.price.small || 0,
@@ -206,6 +206,7 @@ export default function Menu() {
               setActiveFilter={setActiveFilter}
               setSubfilters={setSubfilters}
               subfilters={subfilters}
+              beveragesData={beveragesData}
             />
           )}
         </AnimatePresence>

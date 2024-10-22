@@ -19,6 +19,7 @@ export type Beverage = {
   isFeatured: boolean;
   isAvailable: boolean;
   category: string[];
+  subCategories: string[];
 };
 
 export type CartItem = {

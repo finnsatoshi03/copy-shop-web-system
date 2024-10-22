@@ -26,7 +26,7 @@ export default function AdminMenu() {
       beverages
         ? beverages.map((beverage: Beverage) => ({
             ...beverage,
-            category: [`${beverage.category} coffee`],
+            category: [`${beverage.category}`],
             price: {
               ...beverage.price,
               small: beverage.price.small || 0,

@@ -36,12 +36,12 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
 
   const { mutate: mutateDeleteBeverage, isPending: isDeleting } = useMutation({
     mutationFn: (id: number) => deleteBeverage(id),
-    onSuccess: () => {
+    onSuccess: (res) => {
       toast.success("Item deleted successfully");
       queryClient.invalidateQueries({ queryKey: ["beverages"] });
     },
     onError: (error) => {
-      toast.error(error.response.data);
+      toast.error(error.response.data.message);
     },
   });
 
