@@ -23,12 +23,6 @@ export default function OrderItem() {
     onSubmit,
   } = useOrderLogic(orderDetails);
 
-  const sizes: { [key: string]: string } = {
-    small: "S",
-    medium: "M",
-    large: "L",
-  };
-
   const hasOnlyMediumSize =
     orderDetails.price &&
     !orderDetails.price.small &&
@@ -41,30 +35,42 @@ export default function OrderItem() {
       orderDetails.sugarLevel[0] === 0) ||
       orderDetails.sugarLevel?.length === 0);
 
-  const sizeButtons =
-    !isFoodVariation &&
-    Object.keys(sizes).map((sizeKey) => {
-      const isAvailable = orderDetails?.price?.[sizeKey];
-      const isSelected = selectedSize === sizeKey;
+  const sizes: { [key: string]: string } = {
+    small: "S",
+    medium: "M",
+    large: "L",
+  };
 
-      return (
-        <button
-          type="button"
-          key={sizeKey}
-          onClick={() => handleSizeSelect(sizeKey)}
-          disabled={!isAvailable}
-          className={`rounded-lg px-5 py-3 font-label text-sm font-bold ${
-            isAvailable
-              ? isSelected
-                ? "bg-yellow-500 text-white"
-                : "bg-yellow-100 text-black"
-              : "cursor-not-allowed bg-gray-100 text-gray-400 opacity-50"
-          }`}
-        >
-          {sizes[sizeKey]}
-        </button>
-      );
-    });
+  const hasOnlyMediumPrice =
+    orderDetails.price &&
+    !orderDetails.price.small &&
+    orderDetails.price.medium &&
+    !orderDetails.price.large;
+
+  const sizeButtons = !hasOnlyMediumPrice
+    ? Object.keys(sizes).map((sizeKey) => {
+        const isAvailable = orderDetails?.price?.[sizeKey];
+        const isSelected = selectedSize === sizeKey;
+
+        return (
+          <button
+            type="button"
+            key={sizeKey}
+            onClick={() => handleSizeSelect(sizeKey)}
+            disabled={!isAvailable}
+            className={`rounded-lg px-5 py-3 font-label text-sm font-bold ${
+              isAvailable
+                ? isSelected
+                  ? "bg-yellow-500 text-white"
+                  : "bg-yellow-100 text-black"
+                : "cursor-not-allowed bg-gray-100 text-gray-400 opacity-50"
+            }`}
+          >
+            {sizes[sizeKey]}
+          </button>
+        );
+      })
+    : null;
 
   if (!orderDetails) {
     return <p>No order details available.</p>;
