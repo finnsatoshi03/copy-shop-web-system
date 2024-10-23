@@ -14,9 +14,7 @@ export default function Sidebar() {
   return (
     <nav className="flex h-full flex-col justify-between bg-white p-6">
       <div>
-        <h1 className="font-aura mb-6 text-2xl font-bold">
-          RKYVE Study/Cospace Café
-        </h1>
+        <h1 className="mb-6 font-sans text-2xl font-bold">RKYVE</h1>
         <ul className="space-y-2">
           <li>
             <NavLink
