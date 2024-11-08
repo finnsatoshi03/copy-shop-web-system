@@ -69,21 +69,21 @@ export default function Menu() {
 
   const beveragesData: Beverage[] = beverages
     ? beverages.map((beverage: any) => ({
-        ...beverage,
-        category: [`${beverage.category}`],
-        price: {
-          ...beverage.price,
-          small: beverage.price.small || 0,
-          medium: beverage.price.medium || 0,
-          large: beverage.price.large || 0,
-        },
-        calories: {
-          ...beverage.calories,
-          small: beverage.calories.small || 0,
-          medium: beverage.calories.medium || 0,
-          large: beverage.calories.large || 0,
-        },
-      }))
+      ...beverage,
+      category: [`${beverage.category}`],
+      price: {
+        ...beverage.price,
+        small: beverage.price.small || 0,
+        medium: beverage.price.medium || 0,
+        large: beverage.price.large || 0,
+      },
+      calories: {
+        ...beverage.calories,
+        small: beverage.calories.small || 0,
+        medium: beverage.calories.medium || 0,
+        large: beverage.calories.large || 0,
+      },
+    }))
     : [];
 
   const filteredItems = filterBeverages(
@@ -188,9 +188,9 @@ export default function Menu() {
           <Button
             className={`h-12 rounded-xl ${
               showFilters
-                ? "bg-zinc-600 text-white"
-                : "bg-transparent text-black"
-            }`}
+              ? "bg-zinc-600 text-white"
+              : "bg-transparent text-black"
+              }`}
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
           >
@@ -212,26 +212,45 @@ export default function Menu() {
         </AnimatePresence>
 
         {searchQuery === "" && (activeFilter === "All" || !activeFilter) && (
-          <>
+          <div className="mb-8">
             <h1 className="text-lg font-bold">Best Sellers</h1>
-            <p className="text-sm italic leading-3 opacity-60">
+            <p className="mb-4 text-sm italic leading-3 opacity-60">
               What everyone's loving.
             </p>
-            <Slider {...sliderSettings}>
-              {popularItems.map((beverage, index) => (
-                <motion.div
-                  key={index}
-                  variants={cardVariants}
-                  className="h-[350px] px-1 py-3 md:h-[320px] md:px-3 lg:h-[350px]"
-                >
-                  <Card
-                    data={beverage as Beverage}
-                    onDetails={handleOrderDetails}
-                  />
-                </motion.div>
-              ))}
-            </Slider>
-          </>
+            <div className="relative">
+              {popularItems.length > 6 ? (
+                <Slider {...sliderSettings}>
+                  {popularItems.map((beverage, index) => (
+                    <motion.div
+                      key={beverage.id || index}
+                      variants={cardVariants}
+                      className="px-2"
+                    >
+                      <Card
+                        data={beverage as Beverage}
+                        onDetails={handleOrderDetails}
+                      />
+                    </motion.div>
+                  ))}
+                </Slider>
+              ) : (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+                  {popularItems.map((beverage, index) => (
+                    <motion.div
+                      key={beverage.id || index}
+                      variants={cardVariants}
+                      className="px-2"
+                    >
+                      <Card
+                        data={beverage as Beverage}
+                        onDetails={handleOrderDetails}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         <motion.div

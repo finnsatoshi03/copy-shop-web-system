@@ -12,6 +12,7 @@ import { Button } from "../ui/button";
 import { Slider } from "../ui/slider";
 import { useOrderLogic } from "./useOrderLogic";
 import { FieldValues, SubmitHandler } from "react-hook-form";
+import { API_URL } from "@/services/service";
 
 export function OrderDialog({
   isOpen,
@@ -81,7 +82,7 @@ export function OrderDialog({
                 ? "bg-yellow-500 text-white"
                 : "bg-yellow-100 text-black"
               : "cursor-not-allowed bg-gray-100 text-gray-400 opacity-50"
-          }`}
+            }`}
         >
           {sizes[sizeKey]}
         </button>
@@ -104,7 +105,7 @@ export function OrderDialog({
             <div className="-mx-[1.6rem] -mt-8 h-full">
               <div className="relative h-1/2">
                 <img
-                  src={orderDetails.beverageImg || "images/placeholder.jpg"}
+                  src={`${API_URL}/beverage-image/${orderDetails.beverageImg}` || "images/placeholder.jpg"}
                   className="h-full w-full object-cover"
                   alt={orderDetails.name}
                   style={{

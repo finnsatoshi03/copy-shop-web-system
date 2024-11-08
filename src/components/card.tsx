@@ -1,6 +1,7 @@
 import { Flame } from "lucide-react";
 import { Button } from "./ui/button";
 import { Beverage } from "@/lib/types";
+import { API_URL } from "@/services/service";
 
 export default function Card({
   data,
@@ -26,11 +27,13 @@ export default function Card({
           <Flame size={12} />
         </div>
       )}
-      <img
-        src={data.beverageImg || "images/placeholder.jpg"}
-        className="w-full rounded-lg"
-        alt={data.name}
-      />
+      <div className="w-full h-48 overflow-hidden rounded-lg">
+        <img
+          src={`${API_URL}/beverage-image/${data.beverageImg}` || "images/placeholder.jpg"}
+          className="w-full h-full object-cover"
+          alt={data.name}
+        />
+      </div>
       <div className="flex h-full flex-col justify-between">
         <h1 className="mb-2 mt-4 line-clamp-2 font-label text-xs font-semibold md:text-sm">
           {data.name}
