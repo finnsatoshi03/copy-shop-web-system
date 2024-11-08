@@ -1,5 +1,6 @@
 import { cleanCategory } from "@/lib/helpers";
 import { Beverage } from "@/lib/types";
+import { API_URL } from "@/services/service";
 import React from "react";
 
 interface PopularItemsProps {
@@ -23,7 +24,7 @@ const PopularItems: React.FC<PopularItemsProps> = ({ popularItems }) => {
             </p>
             <div className="flex h-fit gap-2 border-b">
               <img
-                src={beverage.beverageImg || "images/placeholder.jpg"}
+                src={`${API_URL}/beverage-image/${beverage.beverageImg}`  || "images/placeholder.jpg"}
                 className="size-10 rounded-full"
                 alt={beverage.name}
               />

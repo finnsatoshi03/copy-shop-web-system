@@ -25,7 +25,7 @@ export async function uploadBeverageImage(
     formData,
   );
   return {
-    imageUrl: `${API_URL}/beverage-image/${response.data.filename}`,
+    imageUrl: `${response.data.filename}`,
   };
 }
 

@@ -29,6 +29,7 @@ import {
   markBeverageAsAvailable,
 } from "@/services/apiBeverage";
 import toast from "react-hot-toast";
+import { API_URL } from "@/services/service";
 
 export default function AdminMenuItem({ data }: { data: Beverage }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -97,7 +98,7 @@ export default function AdminMenuItem({ data }: { data: Beverage }) {
         >
           <div className="flex gap-2">
             <img
-              src={data.beverageImg || "/images/placeholder.jpg"}
+              src={data.beverageImg === null ? "/images/placeholder.jpg" : `${API_URL}/beverage-image/${data.beverageImg}`}
               className="size-16 rounded-md"
             />
             <div>

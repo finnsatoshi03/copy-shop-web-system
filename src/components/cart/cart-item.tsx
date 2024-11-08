@@ -1,4 +1,5 @@
 import type { CartItem } from "@/lib/types";
+import { API_URL } from "@/services/service";
 import { Minus, Plus, Trash } from "lucide-react";
 
 export function CartItem({
@@ -25,7 +26,7 @@ export function CartItem({
   return (
     <div className="grid grid-cols-[100px_1fr_auto] items-center gap-4">
       <img
-        src={item.beverageImg || "images/placeholder.jpg"}
+        src={`${API_URL}/beverage-image/${item.beverageImg}` || "images/placeholder.jpg"}
         className="rounded-xl"
       />
       <div className="h-[80%] w-[80%] font-label">

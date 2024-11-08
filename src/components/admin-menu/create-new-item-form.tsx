@@ -37,6 +37,7 @@ import {
 } from "../ui/command";
 import { CATEGORIES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { API_URL } from "@/services/service";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -351,7 +352,7 @@ const CreateNewItemForm: React.FC<CreateNewItemFormProps> = ({
                     >
                       {imagePreview ? (
                         <img
-                          src={imagePreview || "images/placeholder.jpg"}
+                          src={`${API_URL}/beverage-image/${imagePreview}` || "images/placeholder.jpg"}
                           alt="Preview"
                           className="h-32 w-32 rounded-full object-cover"
                         />
