@@ -1,50 +1,62 @@
-# React + TypeScript + Vite
+# Copy Shop Web System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for a copy shop/cafe business, allowing customers to browse the menu, place orders, and track their order status. The system also includes an admin dashboard for managing products and orders.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Customer Features
 
-## Expanding the ESLint configuration
+- **Interactive Menu** - Browse beverages with different sizes and customization options
+- **Cart Management** - Add, remove, and update items in your cart
+- **Order Tracking** - Track your order status in real-time
+- **Responsive Design** - Works seamlessly on desktop and mobile devices
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Admin Features
 
-- Configure the top-level `parserOptions` property like this:
+- **Product Management** - Add, edit, and remove menu items
+- **Order Management** - View and update order statuses
+- **Sales Analytics** - Track sales and popular items
+- **Secure Admin Dashboard** - Protected routes for administrative functions
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Technology Stack
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+- **Frontend Framework**: React 18 with TypeScript
+- **Routing**: React Router v6
+- **Styling**: TailwindCSS with Shadcn UI components
+- **State Management**: React Context API & React Query
+- **Animations**: Framer Motion
+- **Form Handling**: React Hook Form with Zod validation
+- **Notifications**: React Hot Toast
+- **Build Tool**: Vite
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## Getting Started
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+
+   ```
+   git clone https://github.com/yourusername/copy-shop-web-system.git
+   cd copy-shop-web-system
+   ```
+
+2. Install dependencies
+
+   ```
+   npm install
+   ```
+
+3. Start the development server
+   ```
+   npm run dev
+   ```
+4. Open your browser and navigate to `http://localhost:5173`
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
